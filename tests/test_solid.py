@@ -41,7 +41,8 @@ class TestBilingualText:
     def test_immutable(self):
         text = BilingualText(en="Hello")
         try:
-            text.en = "Changed"
+            # Use setattr to bypass static type checking while testing runtime behavior
+            setattr(text, "en", "Changed")  # noqa: B010
             raise AssertionError("Should have raised AttributeError")
         except AttributeError:
             pass

@@ -8,18 +8,30 @@ SOLID-compliant architecture:
 - D: Converter depends on abstractions, not concretions
 """
 
-__version__ = "0.1.0"
+import logging
+from importlib.metadata import PackageNotFoundError, version
+
+try:
+    __version__ = version("linkedin2md")
+except PackageNotFoundError:
+    __version__ = "0.0.0"  # Development fallback
+
+# Configure package logger (NullHandler = library best practice)
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 # Main public API
-from linkedin2md.converter import LinkedInToMarkdownConverter, create_converter
+from linkedin2md.converter import (  # noqa: E402
+    LinkedInToMarkdownConverter,
+    create_converter,
+)
 
 # Backward compatibility - import old API
 # (These are deprecated but kept for compatibility)
-from linkedin2md.formatter import MarkdownFormatter
-from linkedin2md.parser import LinkedInExportParser
+from linkedin2md.formatter import MarkdownFormatter  # noqa: E402
+from linkedin2md.parser import LinkedInExportParser  # noqa: E402
 
 # Protocols for type hints and custom implementations
-from linkedin2md.protocols import (
+from linkedin2md.protocols import (  # noqa: E402
     BilingualText,
     DataExtractor,
     FormatterRegistry,
@@ -31,7 +43,7 @@ from linkedin2md.protocols import (
 )
 
 # Registries for extension
-from linkedin2md.registry import (
+from linkedin2md.registry import (  # noqa: E402
     get_formatter_registry,
     get_parser_registry,
     register_formatter,

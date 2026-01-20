@@ -15,26 +15,82 @@ from typing import Any, Protocol, runtime_checkable
 # ============================================================================
 
 
-class BilingualText:
-    """Immutable bilingual text container."""
+class MultilingualText:
+    """Immutable multilingual text container.
 
-    __slots__ = ("en", "es")
+    Supports any number of languages via keyword arguments.
+    Backward compatible with BilingualText API (en/es properties).
+    """
 
-    def __init__(self, en: str = "", es: str = ""):
-        object.__setattr__(self, "en", en)
-        object.__setattr__(self, "es", es)
+    __slots__ = ("_texts",)
 
-    def __setattr__(self, name, value):
-        raise AttributeError("BilingualText is immutable")
+    def __init__(self, **langs: str):
+        """Create with language codes as kwargs.
 
-    def get(self, lang: str, default: str = "") -> str:
-        """Get text in specified language with fallback."""
-        if lang == "en":
-            return self.en or self.es or default
-        return self.es or self.en or default
+        Examples:
+            MultilingualText(en="Hello", es="Hola")
+            MultilingualText(en="Hi", es="Hola", fr="Salut")
+        """
+        object.__setattr__(self, "_texts", dict(langs))
+
+    def __setattr__(self, name: str, value: object) -> None:
+        raise AttributeError("MultilingualText is immutable")
+
+    @property
+    def en(self) -> str:
+        """Backward compatibility: get English text."""
+        return self._texts.get("en", "")
+
+    @property
+    def es(self) -> str:
+        """Backward compatibility: get Spanish text."""
+        return self._texts.get("es", "")
+
+    def get(
+        self,
+        lang: str,
+        fallback_chain: list[str] | None = None,
+        default: str = "",
+    ) -> str:
+        """Get text in specified language with fallback chain.
+
+        Args:
+            lang: Primary language code to retrieve
+            fallback_chain: Languages to try if primary not found
+                (default: ["en", "es"])
+            default: Value if no language found
+
+        Returns:
+            Text in requested or fallback language, or default
+        """
+        if lang in self._texts and self._texts[lang]:
+            return self._texts[lang]
+
+        for fb in fallback_chain or ["en", "es"]:
+            if fb in self._texts and self._texts[fb]:
+                return self._texts[fb]
+
+        return default
+
+    @property
+    def languages(self) -> list[str]:
+        """Return list of language codes with content."""
+        return [lang for lang, text in self._texts.items() if text]
 
     def __repr__(self) -> str:
-        return f"BilingualText(en={self.en!r}, es={self.es!r})"
+        return f"MultilingualText({self._texts!r})"
+
+    def __eq__(self, other: object) -> bool:
+        if isinstance(other, MultilingualText):
+            return self._texts == other._texts
+        return False
+
+    def __hash__(self) -> int:
+        return hash(tuple(sorted(self._texts.items())))
+
+
+# Backward compatibility alias
+BilingualText = MultilingualText
 
 
 # ============================================================================
@@ -48,7 +104,13 @@ class LanguageDetector(Protocol):
 
     @abstractmethod
     def detect(self, text: str) -> str:
-        """Detect language of text. Returns 'en' or 'es'."""
+        """Detect language of text. Returns ISO 639-1 code (e.g., 'en', 'es')."""
+        ...
+
+    @property
+    @abstractmethod
+    def supported_languages(self) -> list[str]:
+        """Return list of language codes this detector can identify."""
         ...
 
 

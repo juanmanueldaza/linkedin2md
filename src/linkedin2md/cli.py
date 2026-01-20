@@ -4,10 +4,13 @@ Dependency Inversion: Uses factory function, doesn't create dependencies directl
 """
 
 import argparse
+import logging
 import sys
 from pathlib import Path
 
 from linkedin2md.converter import create_converter
+
+logger = logging.getLogger(__name__)
 
 # Maximum allowed file size in megabytes (500 MB)
 MAX_FILE_SIZE_MB = 500
@@ -15,23 +18,30 @@ MAX_FILE_SIZE_MB = 500
 
 def main() -> int:
     """Main entry point."""
+    # Configure logging for CLI use
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(levelname)s: %(message)s",
+        stream=sys.stderr,
+    )
+
     args = _parse_args(sys.argv[1:])
 
     if not args.source.exists():
-        print(f"Error: File not found: {args.source}", file=sys.stderr)
+        logger.error("File not found: %s", args.source)
         return 1
 
     if not args.source.suffix.lower() == ".zip":
-        print(f"Error: Expected .zip file, got {args.source.suffix}", file=sys.stderr)
+        logger.error("Expected .zip file, got %s", args.source.suffix)
         return 1
 
     # Check file size to prevent resource exhaustion
     file_size_mb = args.source.stat().st_size / (1024 * 1024)
     if file_size_mb > MAX_FILE_SIZE_MB:
-        print(
-            f"Error: File too large ({file_size_mb:.1f} MB). "
-            f"Maximum allowed is {MAX_FILE_SIZE_MB} MB",
-            file=sys.stderr,
+        logger.error(
+            "File too large (%.1f MB). Maximum allowed is %d MB",
+            file_size_mb,
+            MAX_FILE_SIZE_MB,
         )
         return 1
 
@@ -40,9 +50,10 @@ def main() -> int:
         converter = create_converter(args.source, args.output)
         files = converter.convert(lang=args.lang)
     except Exception as e:
-        print(f"Error: {e}", file=sys.stderr)
+        logger.error("%s", e)
         return 1
 
+    # Success messages go to stdout (user-facing output)
     print(f"Created {len(files)} files in {args.output}/")
     for f in files:
         print(f"  - {f.name}")

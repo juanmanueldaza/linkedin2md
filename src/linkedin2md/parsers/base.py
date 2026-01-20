@@ -7,11 +7,15 @@ Dependency Inversion: Depends on LanguageDetector protocol.
 from abc import ABC, abstractmethod
 
 from linkedin2md.language import (
-    BilingualTextFactory,
+    MultilingualTextFactory,
     get_default_detector,
     get_default_factory,
 )
-from linkedin2md.protocols import BilingualText, LanguageDetector, SectionParser
+from linkedin2md.protocols import LanguageDetector, MultilingualText, SectionParser
+
+# Backward compatibility alias
+BilingualText = MultilingualText
+BilingualTextFactory = MultilingualTextFactory
 
 # Month names for date formatting
 MONTHS = [
@@ -144,10 +148,10 @@ def merge_bilingual_entries(
     key_fields: list[str],
     bilingual_fields: list[str],
 ) -> list[dict]:
-    """Merge duplicate entries with bilingual content.
+    """Merge duplicate entries with multilingual content.
 
-    Groups entries by matching key fields and merges bilingual text from
-    English and Spanish versions into complete BilingualText objects.
+    Groups entries by matching key fields and merges multilingual text from
+    different language versions into complete MultilingualText objects.
     """
     if not entries:
         return []
@@ -185,23 +189,21 @@ def _merge_bilingual_group(group: list[dict], bilingual_fields: list[str]) -> di
     return merged
 
 
-def _merge_bilingual_field(group: list[dict], field: str) -> BilingualText:
-    """Merge a bilingual field from multiple entries."""
-    en = ""
-    es = ""
+def _merge_bilingual_field(group: list[dict], field: str) -> MultilingualText:
+    """Merge a multilingual field from multiple entries."""
+    merged: dict[str, str] = {}
 
     for entry in group:
         value = entry.get(field)
         if not value:
             continue
 
-        if isinstance(value, BilingualText):
-            if value.en:
-                en = value.en
-            if value.es:
-                es = value.es
+        if isinstance(value, MultilingualText):
+            for lang in value.languages:
+                if lang not in merged:
+                    merged[lang] = value.get(lang)
 
-    return BilingualText(en=en, es=es)
+    return MultilingualText(**merged)
 
 
 def _merge_achievements(group: list[dict]) -> list[dict]:
@@ -215,8 +217,7 @@ def _merge_achievements(group: list[dict]) -> list[dict]:
     merged_achievements = []
 
     for i in range(max_len):
-        en = ""
-        es = ""
+        merged_text: dict[str, str] = {}
 
         for achievements in achievement_lists:
             if i >= len(achievements):
@@ -225,12 +226,11 @@ def _merge_achievements(group: list[dict]) -> list[dict]:
             achievement = achievements[i]
             text = achievement.get("text")
 
-            if isinstance(text, BilingualText):
-                if text.en:
-                    en = text.en
-                if text.es:
-                    es = text.es
+            if isinstance(text, MultilingualText):
+                for lang in text.languages:
+                    if lang not in merged_text:
+                        merged_text[lang] = text.get(lang)
 
-        merged_achievements.append({"text": BilingualText(en=en, es=es)})
+        merged_achievements.append({"text": MultilingualText(**merged_text)})
 
     return merged_achievements

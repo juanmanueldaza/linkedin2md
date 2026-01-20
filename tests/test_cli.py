@@ -62,16 +62,15 @@ class TestParseArgs:
 class TestMain:
     """Tests for main entry point."""
 
-    def test_file_not_found(self, capsys):
+    def test_file_not_found(self, caplog):
         """Test error when file doesn't exist."""
         with patch("sys.argv", ["linkedin2md", "nonexistent.zip"]):
             result = main()
 
         assert result == 1
-        captured = capsys.readouterr()
-        assert "File not found" in captured.err
+        assert "File not found" in caplog.text
 
-    def test_not_a_zip_file(self, capsys):
+    def test_not_a_zip_file(self, caplog):
         """Test error when file is not a ZIP."""
         with tempfile.NamedTemporaryFile(suffix=".txt", delete=False) as f:
             f.write(b"not a zip")
@@ -82,12 +81,11 @@ class TestMain:
                 result = main()
 
             assert result == 1
-            captured = capsys.readouterr()
-            assert "Expected .zip file" in captured.err
+            assert "Expected .zip file" in caplog.text
         finally:
             Path(temp_path).unlink()
 
-    def test_file_too_large(self, capsys):
+    def test_file_too_large(self, caplog):
         """Test error when file exceeds size limit."""
         with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as f:
             temp_path = f.name
@@ -104,8 +102,7 @@ class TestMain:
                             result = main()
 
             assert result == 1
-            captured = capsys.readouterr()
-            assert "File too large" in captured.err
+            assert "File too large" in caplog.text
         finally:
             Path(temp_path).unlink()
 
@@ -151,7 +148,7 @@ class TestMain:
 
             assert result == 0
 
-    def test_invalid_zip_file(self, capsys):
+    def test_invalid_zip_file(self, caplog):
         """Test error when ZIP file is corrupted."""
         with tempfile.TemporaryDirectory() as tmpdir:
             zip_path = Path(tmpdir) / "corrupt.zip"
@@ -161,8 +158,7 @@ class TestMain:
                 result = main()
 
             assert result == 1
-            captured = capsys.readouterr()
-            assert "Error" in captured.err
+            assert "Invalid" in caplog.text or "corrupted" in caplog.text
 
 
 class TestMaxFileSize:

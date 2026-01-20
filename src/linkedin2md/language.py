@@ -5,13 +5,17 @@ Single Responsibility: Detect language of text.
 
 import re
 
-from linkedin2md.protocols import BilingualText, LanguageDetector
+from linkedin2md.protocols import LanguageDetector, MultilingualText
+
+# Backward compatibility alias
+BilingualText = MultilingualText
 
 
 class SpanishEnglishDetector(LanguageDetector):
     """Detect Spanish vs English text.
 
     Single Responsibility: Only handles language detection.
+    Extensible: Implement LanguageDetector protocol for other languages.
     """
 
     # Spanish language detection patterns
@@ -24,8 +28,13 @@ class SpanishEnglishDetector(LanguageDetector):
         r"[áéíóúñ¿¡]",  # Spanish characters
     ]
 
-    def __init__(self):
+    def __init__(self) -> None:
         self._regex = re.compile("|".join(self.SPANISH_PATTERNS), re.IGNORECASE)
+
+    @property
+    def supported_languages(self) -> list[str]:
+        """Return list of detectable language codes."""
+        return ["en", "es"]
 
     def detect(self, text: str) -> str:
         """Detect if text is Spanish or English."""
@@ -40,37 +49,39 @@ class SpanishEnglishDetector(LanguageDetector):
         return "en"
 
 
-class BilingualTextFactory:
-    """Factory for creating BilingualText objects.
+class MultilingualTextFactory:
+    """Factory for creating MultilingualText objects.
 
-    Single Responsibility: Create bilingual text with language detection.
+    Single Responsibility: Create multilingual text with language detection.
     Dependency Inversion: Depends on LanguageDetector protocol.
     """
 
     def __init__(self, detector: LanguageDetector):
         self._detector = detector
 
-    def create(self, text: str, lang: str | None = None) -> BilingualText:
-        """Create BilingualText with text in detected/specified language."""
+    def create(self, text: str, lang: str | None = None) -> MultilingualText:
+        """Create MultilingualText with text in detected/specified language."""
         if not text:
-            return BilingualText()
+            return MultilingualText()
 
         detected = lang or self._detector.detect(text)
+        return MultilingualText(**{detected: text})
 
-        if detected == "es":
-            return BilingualText(es=text)
-        return BilingualText(en=text)
+    def merge(self, *texts: MultilingualText) -> MultilingualText:
+        """Merge multiple MultilingualText objects.
 
-    def merge(self, *texts: BilingualText) -> BilingualText:
-        """Merge multiple BilingualText objects."""
-        en = ""
-        es = ""
+        First non-empty value for each language wins.
+        """
+        merged: dict[str, str] = {}
         for t in texts:
-            if t.en and not en:
-                en = t.en
-            if t.es and not es:
-                es = t.es
-        return BilingualText(en=en, es=es)
+            for lang in t.languages:
+                if lang not in merged:
+                    merged[lang] = t.get(lang)
+        return MultilingualText(**merged)
+
+
+# Backward compatibility alias
+BilingualTextFactory = MultilingualTextFactory
 
 
 # Default instances

@@ -5,6 +5,7 @@ Implements the Dependency Inversion Principle:
 - All dependencies are injected, not created internally
 """
 
+import logging
 from pathlib import Path
 
 from linkedin2md.protocols import (
@@ -13,6 +14,8 @@ from linkedin2md.protocols import (
     OutputWriter,
     ParserRegistry,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class LinkedInToMarkdownConverter:
@@ -74,7 +77,7 @@ class LinkedInToMarkdownConverter:
                 parsed[parser.section_key] = result
             except Exception as e:
                 # Log but don't fail on individual section errors
-                print(f"Warning: Failed to parse {parser.section_key}: {e}")
+                logger.warning("Failed to parse %s: %s", parser.section_key, e)
 
         return parsed
 
@@ -105,7 +108,7 @@ class LinkedInToMarkdownConverter:
                     path = self._writer.write(formatter.section_key, content)
                     files.append(path)
             except Exception as e:
-                print(f"Warning: Failed to format {formatter.section_key}: {e}")
+                logger.warning("Failed to format %s: %s", formatter.section_key, e)
 
         return files
 

@@ -6,7 +6,10 @@ Provides common formatting functionality that section formatters can use.
 from abc import ABC, abstractmethod
 from typing import Any
 
-from linkedin2md.protocols import BilingualText, SectionFormatter
+from linkedin2md.protocols import MultilingualText, SectionFormatter
+
+# Backward compatibility alias
+BilingualText = MultilingualText
 
 
 class BaseFormatter(ABC, SectionFormatter):
@@ -31,16 +34,36 @@ class BaseFormatter(ABC, SectionFormatter):
     # Shared Utilities
     # ========================================================================
 
-    def _get_text(self, bilingual: BilingualText | dict | str | None, lang: str) -> str:
-        """Extract text in preferred language with fallback."""
-        if bilingual is None:
+    def _get_text(
+        self,
+        multilingual: MultilingualText | dict | str | None,
+        lang: str,
+        fallback_chain: list[str] | None = None,
+    ) -> str:
+        """Extract text in preferred language with fallback chain.
+
+        Args:
+            multilingual: Text container (MultilingualText, dict, str, or None)
+            lang: Preferred language code
+            fallback_chain: Languages to try if preferred not found
+                (default: ["en", "es"])
+
+        Returns:
+            Text in requested or fallback language
+        """
+        if multilingual is None:
             return ""
-        if isinstance(bilingual, str):
-            return bilingual
-        if isinstance(bilingual, BilingualText):
-            return bilingual.get(lang)
+        if isinstance(multilingual, str):
+            return multilingual
+        if isinstance(multilingual, MultilingualText):
+            return multilingual.get(lang, fallback_chain=fallback_chain or ["en", "es"])
         # Dict fallback for compatibility
-        return bilingual.get(lang) or bilingual.get("en") or bilingual.get("es") or ""
+        if lang in multilingual and multilingual[lang]:
+            return multilingual[lang]
+        for fb in fallback_chain or ["en", "es"]:
+            if fb in multilingual and multilingual[fb]:
+                return multilingual[fb]
+        return ""
 
     def _escape_pipe(self, text: str) -> str:
         """Escape pipe characters for Markdown tables."""
