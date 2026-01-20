@@ -32,9 +32,17 @@ Once your LinkedIn data is in an LLM, try asking:
 
 ## Installation
 
+**Recommended** (using pipx - installs in isolated environment):
+```bash
+pipx install linkedin2md
+```
+
+Or with pip (in a virtual environment):
 ```bash
 pip install linkedin2md
 ```
+
+> **Note**: On modern Linux systems (Debian, Ubuntu 23.04+, Fedora), use `pipx` to avoid the "externally-managed-environment" error.
 
 ## Usage
 
