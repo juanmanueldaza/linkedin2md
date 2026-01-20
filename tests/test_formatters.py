@@ -1,6 +1,5 @@
 """Tests for all formatter modules."""
 
-
 from linkedin2md.formatters.professional import (
     CertificationsFormatter,
     EducationFormatter,
