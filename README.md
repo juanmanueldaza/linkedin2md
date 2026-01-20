@@ -2,8 +2,8 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/linkedin2md)](https://pypi.org/project/linkedin2md/)
 [![Python versions](https://img.shields.io/pypi/pyversions/linkedin2md)](https://pypi.org/project/linkedin2md/)
-[![License](https://img.shields.io/pypi/l/linkedin2md)](https://github.com/jmdagz/linkedin2md/blob/main/LICENSE)
-[![CI](https://github.com/jmdagz/linkedin2md/actions/workflows/ci.yml/badge.svg)](https://github.com/jmdagz/linkedin2md/actions/workflows/ci.yml)
+[![License](https://img.shields.io/pypi/l/linkedin2md)](https://github.com/juanmanueldaza/linkedin2md/blob/main/LICENSE)
+[![CI](https://github.com/juanmanueldaza/linkedin2md/actions/workflows/ci.yml/badge.svg)](https://github.com/juanmanueldaza/linkedin2md/actions/workflows/ci.yml)
 
 Convert LinkedIn data exports to clean Markdown files.
 

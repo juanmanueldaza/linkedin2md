@@ -28,5 +28,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SOLID architecture for extensibility
 - Security features (path traversal protection, URL sanitization, file size limits)
 
-[Unreleased]: https://github.com/jmdagz/linkedin2md/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/jmdagz/linkedin2md/releases/tag/v0.1.0
+[Unreleased]: https://github.com/juanmanueldaza/linkedin2md/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/juanmanueldaza/linkedin2md/releases/tag/v0.1.0

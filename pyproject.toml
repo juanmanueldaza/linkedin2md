@@ -29,9 +29,9 @@ linkedin2md = "linkedin2md.cli:main"
 dev = ["pytest>=9.0", "ruff>=0.9"]
 
 [project.urls]
-Homepage = "https://github.com/jmdagz/linkedin2md"
-Repository = "https://github.com/jmdagz/linkedin2md"
-Issues = "https://github.com/jmdagz/linkedin2md/issues"
+Homepage = "https://github.com/juanmanueldaza/linkedin2md"
+Repository = "https://github.com/juanmanueldaza/linkedin2md"
+Issues = "https://github.com/juanmanueldaza/linkedin2md/issues"
 
 [build-system]
 requires = ["hatchling>=1.27"]

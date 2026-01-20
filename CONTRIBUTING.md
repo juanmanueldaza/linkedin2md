@@ -6,7 +6,7 @@ Thank you for your interest in contributing to linkedin2md! This document provid
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/jmdagz/linkedin2md.git
+   git clone https://github.com/juanmanueldaza/linkedin2md.git
    cd linkedin2md
    ```
 
