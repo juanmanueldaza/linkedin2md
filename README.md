@@ -168,4 +168,4 @@ Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for gui
 
 ## License
 
-MIT - see [LICENSE](LICENSE) for details.
+GPL-2.0 - see [LICENSE](LICENSE) for details.
