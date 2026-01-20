@@ -1,6 +1,6 @@
 [project]
 name = "linkedin2md"
-version = "0.2.0"
+version = "0.2.1"
 description = "Convert LinkedIn data exports to Markdown"
 readme = "README.md"
 license = { text = "GPL-2.0" }
