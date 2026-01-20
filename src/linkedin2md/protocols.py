@@ -8,7 +8,7 @@ Defines contracts that implementations must follow:
 
 from abc import abstractmethod
 from pathlib import Path
-from typing import Protocol, runtime_checkable
+from typing import Any, Protocol, runtime_checkable
 
 # ============================================================================
 # Core Data Types
@@ -86,7 +86,7 @@ class SectionParser(Protocol):
         ...
 
     @abstractmethod
-    def parse(self, raw_data: dict[str, list[dict]]) -> object:
+    def parse(self, raw_data: dict[str, list[dict]]) -> Any:
         """Parse raw CSV data into structured section data."""
         ...
 
@@ -110,7 +110,7 @@ class SectionFormatter(Protocol):
         ...
 
     @abstractmethod
-    def format(self, data: object, lang: str) -> str:
+    def format(self, data: Any, lang: str) -> str:
         """Format section data to Markdown string."""
         ...
 

@@ -178,7 +178,7 @@ class TestParserRegistry:
         class MockParser:
             section_key = "test"
 
-            def parse(self, data):
+            def parse(self, raw_data: dict[str, list[dict]]) -> list:
                 return []
 
         parser = MockParser()

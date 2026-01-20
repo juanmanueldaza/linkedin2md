@@ -33,7 +33,6 @@ jobs:
 
       - name: Type check with pyright
         run: pyright
-        continue-on-error: true # Pre-existing type issues to be addressed later
 
       - name: Run tests
         run: pytest -v

@@ -4,6 +4,7 @@ Provides common formatting functionality that section formatters can use.
 """
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 from linkedin2md.protocols import BilingualText, SectionFormatter
 
@@ -22,7 +23,7 @@ class BaseFormatter(ABC, SectionFormatter):
         ...
 
     @abstractmethod
-    def format(self, data: object, lang: str) -> str:
+    def format(self, data: Any, lang: str) -> str:
         """Format section data to Markdown string."""
         ...
 
@@ -45,7 +46,7 @@ class BaseFormatter(ABC, SectionFormatter):
         """Escape pipe characters for Markdown tables."""
         return text.replace("|", "\\|")
 
-    def _sanitize_url(self, url: str) -> str:
+    def _sanitize_url(self, url: str | None) -> str:
         """Sanitize URL for safe Markdown link rendering.
 
         Only allows http, https, and mailto schemes.
