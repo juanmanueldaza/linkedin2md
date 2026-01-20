@@ -5,7 +5,30 @@
 [![License](https://img.shields.io/pypi/l/linkedin2md)](https://github.com/juanmanueldaza/linkedin2md/blob/main/LICENSE)
 [![CI](https://github.com/juanmanueldaza/linkedin2md/actions/workflows/ci.yml/badge.svg)](https://github.com/juanmanueldaza/linkedin2md/actions/workflows/ci.yml)
 
-Convert LinkedIn data exports to clean Markdown files.
+Convert LinkedIn data exports to clean Markdown files - the ideal format for LLM analysis.
+
+## Why Markdown?
+
+Markdown is the lingua franca of AI tools. Once your LinkedIn data is in `.md` format, you can:
+
+- **Upload to [NotebookLM](https://notebooklm.google.com/)** and have conversations about your career history
+- **Use [Claude Projects](https://claude.ai)** to analyze patterns across your professional journey
+- **Feed to [Obsidian](https://obsidian.md/)** with AI plugins for a personal career knowledge base
+- **Run local LLMs** (Ollama, LM Studio) for completely private analysis
+
+### Example Prompts
+
+Once your LinkedIn data is in an LLM, try asking:
+
+| Question | Data Used |
+|----------|-----------|
+| "What patterns do you see in my career transitions?" | experience.md |
+| "What skills have I developed over time?" | skills.md, experience.md |
+| "Group my connections by industry" | connections.md |
+| "What themes appear in my recommendations?" | recommendations.md |
+| "Summarize my job applications and outcomes" | job_applications.md |
+| "What qualities do people consistently mention about me?" | recommendations.md, endorsements.md |
+| "Based on my experience, what roles should I target?" | All files |
 
 ## Installation
 
@@ -20,6 +43,8 @@ linkedin2md Complete_LinkedInDataExport.zip
 linkedin2md export.zip -o ./my-profile
 linkedin2md export.zip --lang es
 ```
+
+Then drag the output folder into your favorite AI tool.
 
 ### Options
 
@@ -51,9 +76,20 @@ Follow these steps to download your LinkedIn data:
 
 > **Note**: The download link expires after a few days. Download it promptly and store it safely.
 
+## LLM Tools That Work Great With This
+
+| Tool | Type | Best For |
+|------|------|----------|
+| [NotebookLM](https://notebooklm.google.com/) | Cloud | Conversational analysis, audio summaries |
+| [Claude Projects](https://claude.ai) | Cloud | Deep analysis, long context |
+| [ChatGPT](https://chat.openai.com) | Cloud | General analysis, quick insights |
+| [Obsidian](https://obsidian.md/) + AI plugins | Local | Personal knowledge base, linked notes |
+| [Open Notebook](https://github.com/Open-Notebook/Open-Notebook) | Local/Cloud | 16+ AI models, open source |
+| [Ollama](https://ollama.ai/) | Local | Private, offline analysis |
+
 ## Output
 
-Creates markdown files in the output directory, organized by category:
+Creates 40+ markdown files in the output directory, organized by category:
 
 ### Core Profile
 - `profile.md` - Name, title, contact, summary
