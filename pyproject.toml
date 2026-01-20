@@ -26,7 +26,7 @@ dependencies = []
 linkedin2md = "linkedin2md.cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=9.0", "ruff>=0.9"]
+dev = ["pytest>=9.0", "ruff>=0.9", "pyright>=1.1.408"]
 
 [project.urls]
 Homepage = "https://github.com/juanmanueldaza/linkedin2md"
@@ -49,8 +49,3 @@ select = ["E", "W", "F", "I", "B", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-
-[dependency-groups]
-dev = [
-    "pyright>=1.1.408",
-]
