@@ -1,417 +1,520 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>linkedin2md - Convert LinkedIn exports to Markdown for LLM analysis</title>
-    <meta name="description" content="Convert your LinkedIn data export to clean Markdown files - perfect for AI tools like NotebookLM, Claude, ChatGPT, and Obsidian.">
-    <meta name="keywords" content="linkedin, markdown, export, AI, LLM, NotebookLM, Claude, ChatGPT, career analysis">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            linkedin2md - Convert LinkedIn exports to Markdown for LLM analysis
+        </title>
+        <meta
+            name="description"
+            content="Convert your LinkedIn data export to clean Markdown files - perfect for AI tools like NotebookLM, Claude, ChatGPT, and Obsidian."
+        />
+        <meta
+            name="keywords"
+            content="linkedin, markdown, export, AI, LLM, NotebookLM, Claude, ChatGPT, career analysis"
+        />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="linkedin2md - LinkedIn to Markdown converter">
-    <meta property="og:description" content="Convert your LinkedIn data export to clean Markdown files for LLM analysis.">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://linkedin2md.daza.ar">
+        <!-- Open Graph -->
+        <meta
+            property="og:title"
+            content="linkedin2md - LinkedIn to Markdown converter"
+        />
+        <meta
+            property="og:description"
+            content="Convert your LinkedIn data export to clean Markdown files for LLM analysis."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://linkedin2md.daza.ar" />
+        <meta
+            property="og:image"
+            content="https://opengraph.githubassets.com/1/juanmanueldaza/linkedin2md"
+        />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
 
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="linkedin2md">
-    <meta name="twitter:description" content="Convert LinkedIn exports to Markdown for AI analysis">
+        <!-- Twitter Card -->
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="linkedin2md" />
+        <meta
+            name="twitter:description"
+            content="Convert LinkedIn exports to Markdown for AI analysis"
+        />
+        <meta
+            name="twitter:image"
+            content="https://opengraph.githubassets.com/1/juanmanueldaza/linkedin2md"
+        />
 
-    <style>
-        :root {
-            --bg: #0a0a0a;
-            --text: #e5e5e5;
-            --text-muted: #a3a3a3;
-            --accent: #0077b5;
-            --accent-hover: #005582;
-            --code-bg: #1a1a1a;
-            --border: #262626;
-        }
+        <style>
+            :root {
+                --bg: #0a0a0a;
+                --text: #e5e5e5;
+                --text-muted: #a3a3a3;
+                --accent: #0077b5;
+                --accent-hover: #005582;
+                --code-bg: #1a1a1a;
+                --border: #262626;
+            }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            min-height: 100vh;
-        }
+            body {
+                font-family:
+                    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                    Oxygen, Ubuntu, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                line-height: 1.6;
+                min-height: 100vh;
+            }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-        }
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 2rem 1.5rem;
+            }
 
-        header {
-            text-align: center;
-            padding: 4rem 0 3rem;
-        }
+            header {
+                text-align: center;
+                padding: 4rem 0 3rem;
+            }
 
-        h1 {
-            font-size: 3rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            letter-spacing: -0.02em;
-        }
-
-        h1 span {
-            color: var(--accent);
-        }
-
-        .tagline {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            max-width: 500px;
-            margin: 0 auto 2rem;
-        }
-
-        .install-box {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem 1.5rem;
-            margin: 2rem auto;
-            max-width: 500px;
-            position: relative;
-        }
-
-        .install-box code {
-            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-            font-size: 1rem;
-            color: var(--text);
-        }
-
-        .install-box .prompt {
-            color: var(--accent);
-            user-select: none;
-        }
-
-        .buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text);
-            border: 1px solid var(--border);
-        }
-
-        .btn-secondary:hover {
-            border-color: var(--text-muted);
-        }
-
-        section {
-            padding: 3rem 0;
-            border-top: 1px solid var(--border);
-        }
-
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 1.5rem;
-            font-weight: 600;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .feature {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-
-        .feature h3 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: var(--text);
-        }
-
-        .feature p {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-        }
-
-        .tool {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem;
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            text-decoration: none;
-            color: var(--text);
-            transition: border-color 0.2s;
-        }
-
-        .tool:hover {
-            border-color: var(--accent);
-        }
-
-        .tool-icon {
-            font-size: 1.5rem;
-        }
-
-        .tool-name {
-            font-weight: 500;
-        }
-
-        .tool-type {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .prompts {
-            background: var(--code-bg);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .prompt-item {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            font-family: 'SF Mono', Monaco, monospace;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .prompt-item:last-child {
-            border-bottom: none;
-        }
-
-        .prompt-item::before {
-            content: '"';
-            color: var(--accent);
-        }
-
-        .prompt-item::after {
-            content: '"';
-            color: var(--accent);
-        }
-
-        .output-list {
-            columns: 2;
-            column-gap: 2rem;
-            list-style: none;
-        }
-
-        .output-list li {
-            padding: 0.5rem 0;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .output-list code {
-            color: var(--text);
-            font-family: 'SF Mono', Monaco, monospace;
-        }
-
-        footer {
-            text-align: center;
-            padding: 3rem 0;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        footer a {
-            color: var(--accent);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-
-        @media (max-width: 600px) {
             h1 {
-                font-size: 2rem;
+                font-size: 3rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                letter-spacing: -0.02em;
+            }
+
+            h1 span {
+                color: var(--accent);
             }
 
             .tagline {
+                font-size: 1.25rem;
+                color: var(--text-muted);
+                max-width: 500px;
+                margin: 0 auto 2rem;
+            }
+
+            .install-box {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 1rem 1.5rem;
+                margin: 2rem auto;
+                max-width: 500px;
+                position: relative;
+            }
+
+            .install-box code {
+                font-family: "SF Mono", Monaco, "Cascadia Code", monospace;
                 font-size: 1rem;
+                color: var(--text);
+            }
+
+            .install-box .prompt {
+                color: var(--accent);
+                user-select: none;
+            }
+
+            .buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+                margin-top: 2rem;
+            }
+
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.75rem 1.5rem;
+                border-radius: 6px;
+                text-decoration: none;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+
+            .btn-primary {
+                background: var(--accent);
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: var(--accent-hover);
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: var(--text);
+                border: 1px solid var(--border);
+            }
+
+            .btn-secondary:hover {
+                border-color: var(--text-muted);
+            }
+
+            section {
+                padding: 3rem 0;
+                border-top: 1px solid var(--border);
+            }
+
+            h2 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+                font-weight: 600;
+            }
+
+            .features {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1.5rem;
+            }
+
+            .feature {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                padding: 1.5rem;
+            }
+
+            .feature h3 {
+                font-size: 1rem;
+                margin-bottom: 0.5rem;
+                color: var(--text);
+            }
+
+            .feature p {
+                font-size: 0.9rem;
+                color: var(--text-muted);
+            }
+
+            .tools-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 1rem;
+            }
+
+            .tool {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 1rem;
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                text-decoration: none;
+                color: var(--text);
+                transition: border-color 0.2s;
+            }
+
+            .tool:hover {
+                border-color: var(--accent);
+            }
+
+            .tool-icon {
+                font-size: 1.5rem;
+            }
+
+            .tool-name {
+                font-weight: 500;
+            }
+
+            .tool-type {
+                font-size: 0.8rem;
+                color: var(--text-muted);
+            }
+
+            .prompts {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                overflow: hidden;
+            }
+
+            .prompt-item {
+                padding: 1rem 1.5rem;
+                border-bottom: 1px solid var(--border);
+                font-family: "SF Mono", Monaco, monospace;
+                font-size: 0.9rem;
+                color: var(--text-muted);
+            }
+
+            .prompt-item:last-child {
+                border-bottom: none;
+            }
+
+            .prompt-item::before {
+                content: '"';
+                color: var(--accent);
+            }
+
+            .prompt-item::after {
+                content: '"';
+                color: var(--accent);
             }
 
             .output-list {
-                columns: 1;
+                columns: 2;
+                column-gap: 2rem;
+                list-style: none;
             }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>linkedin<span>2md</span></h1>
-            <p class="tagline">Convert your LinkedIn data export to clean Markdown files for LLM analysis</p>
 
-            <div class="install-box">
-                <code><span class="prompt">$</span> pipx install linkedin2md</code>
-            </div>
+            .output-list li {
+                padding: 0.5rem 0;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+            }
 
-            <div class="buttons">
-                <a href="https://github.com/juanmanueldaza/linkedin2md" class="btn btn-primary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                    GitHub
-                </a>
-                <a href="https://pypi.org/project/linkedin2md/" class="btn btn-secondary">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.25l7.5 4.5v9l-7.5 4.5-7.5-4.5v-9l7.5-4.5z"/></svg>
-                    PyPI
-                </a>
-            </div>
-        </header>
+            .output-list code {
+                color: var(--text);
+                font-family: "SF Mono", Monaco, monospace;
+            }
 
-        <section>
-            <h2>Why Markdown?</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Markdown is the lingua franca of AI tools. Convert once, use everywhere.</p>
-            <div class="features">
-                <div class="feature">
-                    <h3>Chat with your career</h3>
-                    <p>Upload to NotebookLM or Claude and have conversations about your professional history</p>
+            footer {
+                text-align: center;
+                padding: 3rem 0;
+                border-top: 1px solid var(--border);
+                color: var(--text-muted);
+                font-size: 0.9rem;
+            }
+
+            footer a {
+                color: var(--accent);
+                text-decoration: none;
+            }
+
+            footer a:hover {
+                text-decoration: underline;
+            }
+
+            @media (max-width: 600px) {
+                h1 {
+                    font-size: 2rem;
+                }
+
+                .tagline {
+                    font-size: 1rem;
+                }
+
+                .output-list {
+                    columns: 1;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <header>
+                <h1>linkedin<span>2md</span></h1>
+                <p class="tagline">
+                    Convert your LinkedIn data export to clean Markdown files
+                    for LLM analysis
+                </p>
+
+                <div class="install-box">
+                    <code
+                        ><span class="prompt">$</span> pipx install
+                        linkedin2md</code
+                    >
                 </div>
-                <div class="feature">
-                    <h3>Find patterns</h3>
-                    <p>Let AI analyze your career transitions, skill development, and professional growth</p>
+
+                <div class="buttons">
+                    <a
+                        href="https://github.com/juanmanueldaza/linkedin2md"
+                        class="btn btn-primary"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                            />
+                        </svg>
+                        GitHub
+                    </a>
+                    <a
+                        href="https://pypi.org/project/linkedin2md/"
+                        class="btn btn-secondary"
+                    >
+                        <svg
+                            width="20"
+                            height="20"
+                            viewBox="0 0 24 24"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M12 0L1.5 6v12L12 24l10.5-6V6L12 0zm0 2.25l7.5 4.5v9l-7.5 4.5-7.5-4.5v-9l7.5-4.5z"
+                            />
+                        </svg>
+                        PyPI
+                    </a>
                 </div>
-                <div class="feature">
-                    <h3>Private analysis</h3>
-                    <p>Run local LLMs with Ollama for completely offline, private career insights</p>
+            </header>
+
+            <section>
+                <h2>Why Markdown?</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem">
+                    Markdown is the lingua franca of AI tools. Convert once, use
+                    everywhere.
+                </p>
+                <div class="features">
+                    <div class="feature">
+                        <h3>Chat with your career</h3>
+                        <p>
+                            Upload to NotebookLM or Claude and have
+                            conversations about your professional history
+                        </p>
+                    </div>
+                    <div class="feature">
+                        <h3>Find patterns</h3>
+                        <p>
+                            Let AI analyze your career transitions, skill
+                            development, and professional growth
+                        </p>
+                    </div>
+                    <div class="feature">
+                        <h3>Private analysis</h3>
+                        <p>
+                            Run local LLMs with Ollama for completely offline,
+                            private career insights
+                        </p>
+                    </div>
+                    <div class="feature">
+                        <h3>40+ files</h3>
+                        <p>
+                            Experience, skills, recommendations, connections,
+                            job applications, and more
+                        </p>
+                    </div>
                 </div>
-                <div class="feature">
-                    <h3>40+ files</h3>
-                    <p>Experience, skills, recommendations, connections, job applications, and more</p>
+            </section>
+
+            <section>
+                <h2>Works with your favorite AI tools</h2>
+                <div class="tools-grid">
+                    <a
+                        href="https://notebooklm.google.com/"
+                        class="tool"
+                        target="_blank"
+                    >
+                        <span class="tool-icon">📓</span>
+                        <div>
+                            <div class="tool-name">NotebookLM</div>
+                            <div class="tool-type">Cloud</div>
+                        </div>
+                    </a>
+                    <a href="https://claude.ai" class="tool" target="_blank">
+                        <span class="tool-icon">🤖</span>
+                        <div>
+                            <div class="tool-name">Claude Projects</div>
+                            <div class="tool-type">Cloud</div>
+                        </div>
+                    </a>
+                    <a
+                        href="https://chat.openai.com"
+                        class="tool"
+                        target="_blank"
+                    >
+                        <span class="tool-icon">💬</span>
+                        <div>
+                            <div class="tool-name">ChatGPT</div>
+                            <div class="tool-type">Cloud</div>
+                        </div>
+                    </a>
+                    <a href="https://obsidian.md" class="tool" target="_blank">
+                        <span class="tool-icon">🗃️</span>
+                        <div>
+                            <div class="tool-name">Obsidian</div>
+                            <div class="tool-type">Local</div>
+                        </div>
+                    </a>
+                    <a href="https://ollama.ai" class="tool" target="_blank">
+                        <span class="tool-icon">🦙</span>
+                        <div>
+                            <div class="tool-name">Ollama</div>
+                            <div class="tool-type">Local</div>
+                        </div>
+                    </a>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <section>
-            <h2>Works with your favorite AI tools</h2>
-            <div class="tools-grid">
-                <a href="https://notebooklm.google.com/" class="tool" target="_blank">
-                    <span class="tool-icon">📓</span>
-                    <div>
-                        <div class="tool-name">NotebookLM</div>
-                        <div class="tool-type">Cloud</div>
+            <section>
+                <h2>Example prompts</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem">
+                    Once your LinkedIn data is in an LLM, try asking:
+                </p>
+                <div class="prompts">
+                    <div class="prompt-item">
+                        What patterns do you see in my career transitions?
                     </div>
-                </a>
-                <a href="https://claude.ai" class="tool" target="_blank">
-                    <span class="tool-icon">🤖</span>
-                    <div>
-                        <div class="tool-name">Claude Projects</div>
-                        <div class="tool-type">Cloud</div>
+                    <div class="prompt-item">
+                        What skills have I developed over time?
                     </div>
-                </a>
-                <a href="https://chat.openai.com" class="tool" target="_blank">
-                    <span class="tool-icon">💬</span>
-                    <div>
-                        <div class="tool-name">ChatGPT</div>
-                        <div class="tool-type">Cloud</div>
+                    <div class="prompt-item">
+                        What qualities do people consistently mention about me?
                     </div>
-                </a>
-                <a href="https://obsidian.md" class="tool" target="_blank">
-                    <span class="tool-icon">🗃️</span>
-                    <div>
-                        <div class="tool-name">Obsidian</div>
-                        <div class="tool-type">Local</div>
+                    <div class="prompt-item">
+                        Based on my experience, what roles should I target?
                     </div>
-                </a>
-                <a href="https://ollama.ai" class="tool" target="_blank">
-                    <span class="tool-icon">🦙</span>
-                    <div>
-                        <div class="tool-name">Ollama</div>
-                        <div class="tool-type">Local</div>
+                    <div class="prompt-item">
+                        Summarize my job applications and outcomes
                     </div>
-                </a>
-            </div>
-        </section>
+                </div>
+            </section>
 
-        <section>
-            <h2>Example prompts</h2>
-            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Once your LinkedIn data is in an LLM, try asking:</p>
-            <div class="prompts">
-                <div class="prompt-item">What patterns do you see in my career transitions?</div>
-                <div class="prompt-item">What skills have I developed over time?</div>
-                <div class="prompt-item">What qualities do people consistently mention about me?</div>
-                <div class="prompt-item">Based on my experience, what roles should I target?</div>
-                <div class="prompt-item">Summarize my job applications and outcomes</div>
-            </div>
-        </section>
+            <section>
+                <h2>Quick start</h2>
+                <div
+                    class="install-box"
+                    style="max-width: 100%; text-align: left"
+                >
+                    <code>
+                        <span class="prompt">$</span> pipx install
+                        linkedin2md<br />
+                        <span class="prompt">$</span> linkedin2md
+                        your_export.zip<br />
+                        <span class="prompt">$</span> linkedin2md export.zip -o
+                        ./my-profile --lang es
+                    </code>
+                </div>
+            </section>
 
-        <section>
-            <h2>Quick start</h2>
-            <div class="install-box" style="max-width: 100%; text-align: left;">
-                <code>
-                    <span class="prompt">$</span> pipx install linkedin2md<br>
-                    <span class="prompt">$</span> linkedin2md your_export.zip<br>
-                    <span class="prompt">$</span> linkedin2md export.zip -o ./my-profile --lang es
-                </code>
-            </div>
-        </section>
+            <section>
+                <h2>Output files</h2>
+                <ul class="output-list">
+                    <li><code>profile.md</code> - Name, title, contact</li>
+                    <li><code>experience.md</code> - Work history</li>
+                    <li><code>education.md</code> - Education</li>
+                    <li><code>skills.md</code> - Professional skills</li>
+                    <li><code>certifications.md</code> - Certifications</li>
+                    <li><code>recommendations.md</code> - Recommendations</li>
+                    <li><code>connections.md</code> - Your network</li>
+                    <li><code>job_applications.md</code> - Applications</li>
+                    <li><code>posts.md</code> - Your posts</li>
+                    <li><code>learning.md</code> - LinkedIn Learning</li>
+                    <li><code>search_queries.md</code> - Search history</li>
+                    <li><code>...and 30+ more</code></li>
+                </ul>
+            </section>
 
-        <section>
-            <h2>Output files</h2>
-            <ul class="output-list">
-                <li><code>profile.md</code> - Name, title, contact</li>
-                <li><code>experience.md</code> - Work history</li>
-                <li><code>education.md</code> - Education</li>
-                <li><code>skills.md</code> - Professional skills</li>
-                <li><code>certifications.md</code> - Certifications</li>
-                <li><code>recommendations.md</code> - Recommendations</li>
-                <li><code>connections.md</code> - Your network</li>
-                <li><code>job_applications.md</code> - Applications</li>
-                <li><code>posts.md</code> - Your posts</li>
-                <li><code>learning.md</code> - LinkedIn Learning</li>
-                <li><code>search_queries.md</code> - Search history</li>
-                <li><code>...and 30+ more</code></li>
-            </ul>
-        </section>
-
-        <footer>
-            <p>
-                Open source (GPL-2.0) · Built by <a href="https://github.com/juanmanueldaza">Juan Manuel Daza</a>
-            </p>
-        </footer>
-    </div>
-</body>
+            <footer>
+                <p>
+                    Open source (GPL-2.0) · Built by
+                    <a href="https://github.com/juanmanueldaza"
+                        >Juan Manuel Daza</a
+                    >
+                </p>
+            </footer>
+        </div>
+    </body>
 </html>
