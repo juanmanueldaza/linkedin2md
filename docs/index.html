@@ -2,6 +2,21 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
+        <!-- Google Analytics 4 with Consent Mode v2 (GDPR Compliant) -->
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied'
+            });
+            gtag('js', new Date());
+            gtag('config', 'G-PV6HF4TEQ7');
+        </script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-PV6HF4TEQ7"></script>
+
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>
             linkedin2md - Convert LinkedIn exports to Markdown for LLM analysis
@@ -14,6 +29,11 @@
             name="keywords"
             content="linkedin, markdown, export, AI, LLM, NotebookLM, Claude, ChatGPT, career analysis"
         />
+
+        
+        <link rel="canonical" href="https://linkedin2md.daza.ar/" />
+        <meta name="author" content="Juan Manuel Daza" />
+        <meta name="theme-color" content="#0a0a0a" />
 
         <!-- Open Graph -->
         <meta
@@ -310,7 +330,27 @@
                     columns: 1;
                 }
             }
+        
+            .cookie-settings-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.8rem; margin-top: 0.5rem; display: block; }
+            .cookie-settings-btn:hover { color: var(--accent); }
+            .cookie-banner { position: fixed; bottom: 0; left: 0; right: 0; background: var(--code-bg); border-top: 1px solid var(--accent); padding: 1.5rem; z-index: 1000; }
+            .cookie-banner[hidden] { display: none; }
+            .cookie-content { max-width: 800px; margin: 0 auto; text-align: center; }
+            .cookie-content p { margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted); }
+            .cookie-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+            .cookie-btn { padding: 0.5rem 1.5rem; border-radius: 4px; border: 1px solid var(--border); cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+            .cookie-btn-reject { background: transparent; color: var(--text); }
+            .cookie-btn-reject:hover { border-color: var(--text-muted); }
+            .cookie-btn-accept { background: var(--accent); border-color: var(--accent); color: white; }
+            .cookie-btn-accept:hover { background: var(--accent-hover); }
+
         </style>
+    
+        <!-- Structured Data -->
+        <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"SoftwareApplication","name":"linkedin2md","description":"Convert your LinkedIn data export to clean Markdown files for AI analysis.","url":"https://linkedin2md.daza.ar","applicationCategory":"DeveloperApplication","operatingSystem":"Cross-platform","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"author":{"@type":"Person","name":"Juan Manuel Daza","url":"https://daza.ar"},"license":"https://opensource.org/licenses/GPL-2.0","downloadUrl":"https://pypi.org/project/linkedin2md/","softwareVersion":"0.3.0","codeRepository":"https://github.com/juanmanueldaza/linkedin2md"}
+        </script>
+
     </head>
     <body>
         <div class="container">
@@ -519,5 +559,21 @@
                 </p>
             </footer>
         </div>
+    
+        <!-- Cookie Consent Banner -->
+        <div id="cookie-banner" class="cookie-banner" role="dialog" aria-modal="true" hidden>
+            <div class="cookie-content">
+                <p>We use cookies to analyze site traffic. You can accept or reject analytics cookies.</p>
+                <div class="cookie-buttons">
+                    <button type="button" id="cookie-reject" class="cookie-btn cookie-btn-reject">Reject All</button>
+                    <button type="button" id="cookie-accept" class="cookie-btn cookie-btn-accept">Accept All</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const ConsentManager={STORAGE_KEY:'cookie_consent',init(){const c=this.getConsent();if(c===null)this.showBanner();else this.applyConsent(c);this.bindEvents();},getConsent(){const s=localStorage.getItem(this.STORAGE_KEY);return s===null?null:s==='granted';},setConsent(g){localStorage.setItem(this.STORAGE_KEY,g?'granted':'denied');this.applyConsent(g);this.hideBanner();},applyConsent(g){const s=g?'granted':'denied';if(typeof gtag!=='undefined')gtag('consent','update',{'ad_storage':s,'ad_user_data':s,'ad_personalization':s,'analytics_storage':s});},showBanner(){document.getElementById('cookie-banner').hidden=false;},hideBanner(){document.getElementById('cookie-banner').hidden=true;},bindEvents(){document.getElementById('cookie-accept')?.addEventListener('click',()=>this.setConsent(true));document.getElementById('cookie-reject')?.addEventListener('click',()=>this.setConsent(false));document.getElementById('cookie-settings')?.addEventListener('click',()=>this.showBanner());}};document.addEventListener('DOMContentLoaded',()=>ConsentManager.init());
+        </script>
+
     </body>
 </html>
