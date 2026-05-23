@@ -15,6 +15,12 @@ from linkedin2md.protocols import (
     ParserRegistry,
 )
 
+try:
+    from tqdm import tqdm
+except ImportError:
+    def tqdm(iterable, desc="", **kwargs):
+        print(desc)
+        return iterable
 logger = logging.getLogger(__name__)
 
 
@@ -71,7 +77,7 @@ class LinkedInToMarkdownConverter:
         """Parse all sections using registered parsers."""
         parsed = {}
 
-        for parser in self._parsers.get_all():
+        for parser in tqdm(self._parsers.get_all(), desc="Processing sections"):
             try:
                 result = parser.parse(raw_data)
                 parsed[parser.section_key] = result
@@ -94,7 +100,7 @@ class LinkedInToMarkdownConverter:
                 files.append(path)
 
         # Format other sections
-        for formatter in self._formatters.get_all():
+        for formatter in tqdm(self._formatters.get_all(), desc="Processing sections"):
             if formatter.section_key == "profile":
                 continue  # Already handled
 
