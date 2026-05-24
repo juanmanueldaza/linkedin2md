@@ -177,9 +177,18 @@ With the `--pdf` flag, `linkedin2md` converts your parsed structured data into a
     ```
     *(If not installed, `linkedin2md` will continue to generate your Markdown folder safely, omitting the PDF and providing setup instructions).*
 
-## 🤖 Agentic Development (NERV Framework)
+## 🤖 Agentic Development ([NERV](https://github.com/juanmanueldaza/nerv) Framework)
 
-This repository is fully configured for **Agentic Development** using [opencode](https://opencode.ai) and the **NERV** orchestration framework. NERV coordinates specialized autonomous subagents to design, program, test, and audit code changes.
+This repository is fully configured for **Agentic Development** using [opencode](https://opencode.ai) and the [NERV](https://github.com/juanmanueldaza/nerv) orchestration framework. NERV coordinates specialized autonomous subagents to design, program, test, and audit code changes.
+
+### Install NERV
+
+```bash
+git clone https://github.com/juanmanueldaza/nerv.git ~/nerv
+cd ~/nerv && uv tool install .
+cd /path/to/linkedin2md
+nerv init
+```
 
 ### Quick Commands (Inside Opencode/Claude Code TUI):
 
