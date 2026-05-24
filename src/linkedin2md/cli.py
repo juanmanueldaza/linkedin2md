@@ -62,19 +62,38 @@ def main() -> int:
 
     # Step 4: Optional PDF Generation
     if args.pdf:
-        profile_path = args.output / "profile.md"
-        if profile_path.exists():
-            from linkedin2md.pdf import convert_md_to_pdf
+        from linkedin2md.pdf import convert_md_to_pdf
 
-            pdf_path = args.output / "profile.pdf"
-            print("Generating PDF Resume...")
-            if convert_md_to_pdf(profile_path.read_text(encoding="utf-8"), pdf_path):
-                print(f"Created PDF Resume: {pdf_path}")
-            else:
-                logger.error("Failed to generate PDF Resume.")
-                return 1
+        # Sections to include in the resume PDF, in order
+        resume_sections = [
+            "profile",
+            "experience",
+            "education",
+            "certifications",
+            "skills",
+            "languages",
+            "projects",
+        ]
+
+        resume_md_parts = []
+        for section in resume_sections:
+            section_path = args.output / f"{section}.md"
+            if section_path.exists():
+                content = section_path.read_text(encoding="utf-8").strip()
+                if content:
+                    resume_md_parts.append(content)
+
+        if not resume_md_parts:
+            logger.warning("No profile sections found to generate PDF.")
+            return 1
+
+        pdf_path = args.output / "profile.pdf"
+        print("Generating PDF Resume...")
+        if convert_md_to_pdf("\n\n".join(resume_md_parts), pdf_path):
+            print(f"Created PDF Resume: {pdf_path}")
         else:
-            logger.warning("Could not find profile.md to generate PDF.")
+            logger.error("Failed to generate PDF Resume.")
+            return 1
 
     return 0
 
