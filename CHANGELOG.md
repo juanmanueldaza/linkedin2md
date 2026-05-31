@@ -11,12 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Optional A4 PDF Resume Generator (`--pdf` flag) producing print-ready professional CVs via WeasyPrint
-- NERV Agentic Development framework configuration (opencode.json, agents, skills)
+- N3RV Agentic Development framework configuration (opencode.json, agents, skills)
 - GitHub Pages landing page with custom domain, structured data, and GA4 Consent Mode v2
 - OG image meta tags for social media sharing
 
 ### Changed
-- Improved README documentation with PDF and NERV sections
+- Improved README documentation with PDF and N3RV sections
 - Better social sharing titles and descriptions
 
 ### Fixed

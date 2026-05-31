@@ -4,9 +4,9 @@ description: "Archive all SDD artifacts for a change as a single completed recor
 compatibility: opencode
 when_to_use: "Final phase of the SDD workflow, after sdd-verify returns APPROVED."
 allowed-tools:
-  - mcp__nerv-memory__memory_recall
-  - mcp__nerv-memory__memory_save
-  - mcp__nerv-memory__memory_search
+  - mcp__n3rv-memory__memory_recall
+  - mcp__n3rv-memory__memory_save
+  - mcp__n3rv-memory__memory_search
 model: low
 effort: low
 user-invocable: false

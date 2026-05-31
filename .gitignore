@@ -88,4 +88,4 @@ pyrightconfig.json
 # Output directories (for testing)
 linkedin_export/
 output/
-.nerv/
+.n3rv/

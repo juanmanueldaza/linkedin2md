@@ -1,6 +1,6 @@
 ---
 description: Run tests using the project test runner
-agent: nerv
+agent: n3rv
 subtask: true
 ---
 Run the test suite for this project.

@@ -7,9 +7,9 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-  - mcp__nerv-memory__memory_search
-  - mcp__nerv-memory__memory_recall
-  - mcp__nerv-memory__memory_save
+  - mcp__n3rv-memory__memory_search
+  - mcp__n3rv-memory__memory_recall
+  - mcp__n3rv-memory__memory_save
 model: low
 effort: low
 user-invocable: false

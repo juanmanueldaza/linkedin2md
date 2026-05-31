@@ -5,8 +5,8 @@ compatibility: opencode
 when_to_use: "After sdd-spec. Reads spec and proposal from memory, produces a technical design."
 allowed-tools:
   - Read
-  - mcp__nerv-memory__memory_recall
-  - mcp__nerv-memory__memory_save
+  - mcp__n3rv-memory__memory_recall
+  - mcp__n3rv-memory__memory_save
 model: medium
 effort: medium
 user-invocable: false

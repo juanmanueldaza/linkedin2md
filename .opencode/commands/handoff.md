@@ -1,6 +1,6 @@
 ---
 description: Create an agent handoff document
-agent: nerv
+agent: n3rv
 subtask: true
 ---
 Create a handoff document for: $ARGUMENTS

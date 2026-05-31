@@ -10,8 +10,8 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
-  - mcp__nerv-memory__memory_recall
-  - mcp__nerv-memory__memory_save
+  - mcp__n3rv-memory__memory_recall
+  - mcp__n3rv-memory__memory_save
 model: high
 effort: high
 user-invocable: false
