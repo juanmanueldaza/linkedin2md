@@ -8,6 +8,7 @@ import logging
 import sys
 from pathlib import Path
 
+from linkedin2md import __version__
 from linkedin2md.converter import create_converter
 from linkedin2md.progress import show_progress
 
@@ -103,6 +104,11 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="linkedin2md",
         description="Convert LinkedIn data exports to Markdown",
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     parser.add_argument(
         "source",

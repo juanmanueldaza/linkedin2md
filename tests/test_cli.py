@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 
+from linkedin2md import __version__
 from linkedin2md.cli import MAX_FILE_SIZE_MB, _parse_args, main
 
 
@@ -57,6 +58,16 @@ class TestParseArgs:
         """Test parsing without source raises error."""
         with pytest.raises(SystemExit):
             _parse_args([])
+
+    def test_parse_version_flag(self, capsys):
+        """--version prints program name + version and exits with code 0."""
+        with pytest.raises(SystemExit) as exc_info:
+            _parse_args(["--version"])
+
+        assert exc_info.value.code == 0
+        captured = capsys.readouterr()
+        assert __version__ in captured.out
+        assert "linkedin2md" in captured.out
 
 
 class TestMain:
