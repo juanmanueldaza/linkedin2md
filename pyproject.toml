@@ -4,7 +4,7 @@ version = "0.3.1"
 description = "Convert LinkedIn data exports to Markdown"
 readme = "README.md"
 license = { text = "GPL-2.0" }
-authors = [{ name = "Juan Manuel Daza", email = "juanmanueldaza@gmail.com" }]
+authors = [{ name = "Juan Manuel Daza", email = "juan@daza.ar" }]
 requires-python = ">=3.13"
 keywords = ["linkedin", "markdown", "export", "cv", "resume", "parser"]
 classifiers = [

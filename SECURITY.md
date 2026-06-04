@@ -16,7 +16,7 @@ This allows us to coordinate a fix before the details are made public.
 
 You can also email vulnerability reports to:
 
-📧 **juanmanueldaza@gmail.com**
+📧 **juan@daza.ar**
 
 Please include:
 - A description of the vulnerability
