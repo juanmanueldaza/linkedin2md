@@ -3,6 +3,8 @@
 [![PyPI version](https://img.shields.io/pypi/v/linkedin2md)](https://pypi.org/project/linkedin2md/)
 [![Python versions](https://img.shields.io/pypi/pyversions/linkedin2md)](https://pypi.org/project/linkedin2md/)
 [![License](https://img.shields.io/pypi/l/linkedin2md)](https://github.com/juanmanueldaza/linkedin2md/blob/main/LICENSE)
+[![PyPI Downloads](https://img.shields.io/pypi/dm/linkedin2md?style=flat-square)](https://pypi.org/project/linkedin2md/)
+[![GitHub stars](https://img.shields.io/github/stars/juanmanueldaza/linkedin2md?style=flat-square)](https://github.com/juanmanueldaza/linkedin2md)
 [![CI](https://github.com/juanmanueldaza/linkedin2md/actions/workflows/ci.yml/badge.svg)](https://github.com/juanmanueldaza/linkedin2md/actions/workflows/ci.yml)
 [![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/juanmanueldaza/linkedin2md/issues)
 [![Good First Issues](https://img.shields.io/github/issues/juanmanueldaza/linkedin2md/good%20first%20issue?style=flat-square&label=good%20first%20issues)](https://github.com/juanmanueldaza/linkedin2md/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22)
