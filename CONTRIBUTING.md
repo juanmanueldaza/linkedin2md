@@ -42,6 +42,21 @@ ruff format --check .
 pyright
 ```
 
+## Pre-commit Hooks
+
+This project uses pre-commit hooks to automatically lint, format, and type-check your code before each commit.
+
+```bash
+# Install pre-commit
+pip install pre-commit
+
+# Install the hooks
+pre-commit install
+
+# (Optional) Run all hooks on the entire codebase once
+pre-commit run --all-files
+```
+
 ## Making Changes
 
 1. Create a branch: `git checkout -b my-feature`
