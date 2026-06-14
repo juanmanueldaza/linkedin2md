@@ -223,7 +223,9 @@ class JobDescriptionParser(BaseParser):
                 "company": company,
                 "title": title,
                 "description": j.get("Description") or j.get("Job Description") or None,
-                "date_applied": j.get("Application Date") or j.get("Date Applied") or None,
+                "date_applied": j.get("Application Date")
+                or j.get("Date Applied")
+                or None,
                 "status": j.get("Status") or None,
             }
             result.append(entry)
