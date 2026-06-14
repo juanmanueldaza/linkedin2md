@@ -1,11 +1,11 @@
 /**
- * nerv-shell-env plugin for OpenCode.
+ * n3rv-shell-env plugin for OpenCode.
  *
- * shell.env hook: injects NERV_AGENT_SOURCE based on the active OpenCode
+ * shell.env hook: injects N3RV_AGENT_SOURCE based on the active OpenCode
  * agent name. Preserves existing value if already set.
  *
  * Agent name → source mapping:
- *   "nerv"          → "opencode:nerv"
+ *   "n3rv"          → "opencode:n3rv"
  *   "sdd-*"         → "opencode:sdd-<phase>"
  *   "git-ops"       → "opencode:git-ops"
  *   "github-ops"    → "opencode:github-ops"
@@ -15,7 +15,7 @@
  */
 
 const AGENT_SOURCE_MAP = {
-  nerv: "opencode:nerv",
+  n3rv: "opencode:n3rv",
   "git-ops": "opencode:git-ops",
   "github-ops": "opencode:github-ops",
 };
@@ -31,17 +31,17 @@ function deriveSource(agentName) {
 /**
  * Plugin factory (OpenCode 1.14.x API)
  */
-export const NervShellEnv = async (_ctx) => {
+export const N3rvShellEnv = async (_ctx) => {
   return {
     /** shell.env hook — runs before each shell subprocess. */
     "shell.env": async (input, output) => {
       try {
         // Never overwrite an already-set value
-        if (output.env.NERV_AGENT_SOURCE) return;
+        if (output.env.N3RV_AGENT_SOURCE) return;
 
         const agentName = input.agentName ?? input.agent ?? "";
         const source = deriveSource(agentName);
-        output.env.NERV_AGENT_SOURCE = source;
+        output.env.N3RV_AGENT_SOURCE = source;
       } catch {
         // Degrade silently — never block OpenCode
       }
@@ -49,4 +49,4 @@ export const NervShellEnv = async (_ctx) => {
   };
 };
 
-export default NervShellEnv;
+export default N3rvShellEnv;

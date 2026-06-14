@@ -1,5 +1,5 @@
 /**
- * nerv-lifecycle plugin for OpenCode.
+ * n3rv-lifecycle plugin for OpenCode.
  *
  * Two hooks:
  * 1. experimental.session.compacting — injects SDD pipeline state into
@@ -126,7 +126,7 @@ const IDLE_THRESHOLD_MS = 300_000; // 5 minutes
 // Plugin factory (OpenCode 1.14.x API)
 // ──────────────────────────────────────────────
 
-export const NervLifecycle = async (_ctx) => {
+export const N3rvLifecycle = async (_ctx) => {
   return {
     /**
      * Compaction hook: inject SDD pipeline state into compaction context.
@@ -170,4 +170,4 @@ export const NervLifecycle = async (_ctx) => {
   };
 };
 
-export default NervLifecycle;
+export default N3rvLifecycle;

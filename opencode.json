@@ -23,38 +23,12 @@
         }
     },
     "mcp": {
-        "nerv-memory": {
-            "type": "local",
-            "command": [
-                "uv",
-                "run",
-                "nerv-memory"
-            ],
-            "environment": {
-                "NERV_AGENT_SOURCE": "opencode"
-            }
-        },
-        "nerv-hub": {
-            "type": "local",
-            "command": [
-                "uv",
-                "run",
-                "nerv-hub"
-            ],
-            "environment": {
-                "NERV_AGENT_SOURCE": "opencode"
-            }
-        },
         "github": {
             "type": "local",
             "command": [
-                "npx",
-                "-y",
-                "@github/github-mcp-server"
-            ],
-            "environment": {
-                "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
-            }
+                "bash",
+                ".opencode/scripts/github-mcp-wrapper.sh"
+            ]
         },
         "context7": {
             "type": "local",
