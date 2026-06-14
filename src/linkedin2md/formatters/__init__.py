@@ -32,8 +32,8 @@ from linkedin2md.formatters.identity import (
     VerificationsFormatter,
 )
 from linkedin2md.formatters.jobs import (
-    JobDescriptionFormatter,
     JobApplicationsFormatter,
+    JobDescriptionFormatter,
     JobPreferencesFormatter,
     SavedJobAlertsFormatter,
     SavedJobAnswersFormatter,

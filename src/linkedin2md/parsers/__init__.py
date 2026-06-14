@@ -32,8 +32,8 @@ from linkedin2md.parsers.identity import (
     VerificationsParser,
 )
 from linkedin2md.parsers.jobs import (
-    JobDescriptionParser,
     JobApplicationsParser,
+    JobDescriptionParser,
     JobPreferencesParser,
     SavedJobAlertsParser,
     SavedJobAnswersParser,
