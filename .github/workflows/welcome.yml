@@ -1,0 +1,36 @@
+name: Welcome first-time contributors
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          issue-message: |
+            👋 Thanks for opening your first issue! We appreciate you taking the time to help improve the project.
+
+            A maintainer will review your issue soon. In the meantime, make sure to:
+            - Include reproduction steps for bugs
+            - Describe the motivation for feature requests
+            - Check if there's already a related issue or PR
+
+            Welcome aboard! 🚀
+          pr-message: |
+            🎉 Thanks for opening your first pull request! Contributions like yours make this project better.
+
+            Here's what happens next:
+            1. Automated checks will run (if CI is configured)
+            2. A maintainer will review your changes
+            3. You may get feedback or requests for changes
+            4. Once approved, your PR will be merged!
+
+            Don't hesitate to ask questions — we're here to help! 💪
