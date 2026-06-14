@@ -5,7 +5,7 @@ description = "Convert LinkedIn data exports to Markdown"
 readme = "README.md"
 license = { text = "GPL-2.0" }
 authors = [{ name = "Juan Manuel Daza", email = "juan@daza.ar" }]
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 keywords = ["linkedin", "markdown", "export", "cv", "resume", "parser"]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -15,6 +15,9 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v2 (GPLv2)",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
     "Topic :: Text Processing :: Markup :: Markdown",
@@ -41,7 +44,7 @@ build-backend = "hatchling.build"
 packages = ["src/linkedin2md"]
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py310"
 line-length = 88
 
 [tool.ruff.lint]
