@@ -193,3 +193,38 @@ class SavedJobAlertsParser(BaseParser):
             result.append(entry)
 
         return result
+
+
+@register_parser
+class JobDescriptionParser(BaseParser):
+    """Parse job descriptions from job applications or dedicated descriptions CSV."""
+
+    @property
+    def section_key(self) -> str:
+        return "job_descriptions"
+
+    def parse(self, raw_data: dict[str, list[dict]]) -> list[dict]:
+        jobs = self._merge_csv_sources(
+            raw_data,
+            ["job_descriptions", "job_descriptions_1", "job_descriptions_2"],
+        )
+        if not jobs:
+            jobs = self._merge_csv_sources(
+                raw_data,
+                ["job_applications", "job_applications_1", "job_applications_2"],
+            )
+        result = []
+        for j in jobs:
+            company = j.get("Company Name") or j.get("Company") or ""
+            title = j.get("Job Title") or j.get("Title") or ""
+            if not company and not title:
+                continue
+            entry = {
+                "company": company,
+                "title": title,
+                "description": j.get("Description") or j.get("Job Description") or None,
+                "date_applied": j.get("Application Date") or j.get("Date Applied") or None,
+                "status": j.get("Status") or None,
+            }
+            result.append(entry)
+        return result

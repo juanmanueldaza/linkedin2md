@@ -171,3 +171,40 @@ class SavedJobAlertsFormatter(BaseFormatter):
             lines.append("")
 
         return "\n".join(lines)
+
+
+@register_formatter
+class JobDescriptionFormatter(BaseFormatter):
+    """Format job descriptions section."""
+
+    @property
+    def section_key(self) -> str:
+        return "job_descriptions"
+
+    def format(self, data: list, lang: str) -> str:
+        if not data:
+            return ""
+
+        lines = ["# Job Descriptions", ""]
+
+        for job in data:
+            company = job.get("company", "")
+            title = job.get("title", "")
+            description = job.get("description", "") or ""
+            date_applied = job.get("date_applied", "") or ""
+            status = job.get("status", "") or ""
+
+            lines.append(f"## {company}")
+            if title:
+                lines.append(f"**Title:** {title}")
+            if description:
+                lines.append(f"**Description:** {description}")
+            if date_applied:
+                lines.append(f"**Date Applied:** {date_applied}")
+            if status:
+                lines.append(f"**Status:** {status}")
+            lines.append("")
+            lines.append("---")
+            lines.append("")
+
+        return "\n".join(lines)
