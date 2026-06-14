@@ -1,5 +1,6 @@
 """Tests for all formatter modules."""
 
+from linkedin2md.formatters.jobs import JobDescriptionFormatter
 from linkedin2md.formatters.professional import (
     CertificationsFormatter,
     EducationFormatter,
@@ -361,3 +362,122 @@ class TestFormatterEdgeCases:
         result = formatter.format(data, "en")
 
         assert "# Test" in result
+
+
+# =============================================================================
+# Job Description Formatter
+# =============================================================================
+
+
+class TestJobDescriptionFormatter:
+    """Tests for JobDescriptionFormatter."""
+
+    def test_format_single_job(self):
+        """Test formatting a single job entry produces structured markdown."""
+        formatter = JobDescriptionFormatter()
+        data = [
+            {
+                "company": "Acme Corp",
+                "title": "Senior Engineer",
+                "description": "Build and maintain systems.",
+                "date_applied": "2024-01-15",
+                "status": "Applied",
+            }
+        ]
+        result = formatter.format(data, "en")
+        assert "# Job Descriptions" in result
+        assert "## Acme Corp" in result
+        assert "**Title:** Senior Engineer" in result
+        assert "**Description:** Build and maintain systems." in result
+        assert "**Date Applied:** 2024-01-15" in result
+        assert "**Status:** Applied" in result
+        assert "---" in result
+
+    def test_format_empty_data_returns_empty(self):
+        """Test empty data returns empty string."""
+        formatter = JobDescriptionFormatter()
+        assert formatter.format([], "en") == ""
+
+    def test_format_missing_optional_fields_omitted(self):
+        """Test missing optional fields are not rendered."""
+        formatter = JobDescriptionFormatter()
+        data = [
+            {
+                "company": "Minimal Co",
+                "title": "",
+                "description": None,
+                "date_applied": None,
+                "status": "",
+            }
+        ]
+        result = formatter.format(data, "en")
+        assert "## Minimal Co" in result
+        assert "**Title:** (not specified)" in result
+        assert "**Description:**" not in result
+        assert "**Date Applied:**" not in result
+        assert "**Status:**" not in result
+
+    def test_format_title_only_entry(self):
+        """Test entry with only title uses title as heading."""
+        formatter = JobDescriptionFormatter()
+        data = [
+            {
+                "company": "",
+                "title": "Ghost Role",
+                "description": None,
+                "date_applied": None,
+                "status": None,
+            }
+        ]
+        result = formatter.format(data, "en")
+        assert "## Ghost Role" in result
+        assert "**Company:** (not specified)" in result
+
+    def test_format_company_only_entry(self):
+        """Test entry with only company uses company as heading."""
+        formatter = JobDescriptionFormatter()
+        data = [
+            {
+                "company": "Only Co",
+                "title": "",
+                "description": None,
+                "date_applied": None,
+                "status": None,
+            }
+        ]
+        result = formatter.format(data, "en")
+        assert "## Only Co" in result
+        assert "**Title:** (not specified)" in result
+
+    def test_format_empty_company_and_title_fallback(self):
+        """Test fallback to 'Unknown' when both company and title are empty."""
+        formatter = JobDescriptionFormatter()
+        data = [
+            {
+                "company": "",
+                "title": "",
+                "description": None,
+                "date_applied": None,
+                "status": None,
+            }
+        ]
+        result = formatter.format(data, "en")
+        assert "## Unknown" in result
+
+    def test_format_multiple_jobs(self):
+        """Test formatting multiple job entries."""
+        formatter = JobDescriptionFormatter()
+        data = [
+            {"company": "Acme", "title": "Dev"},
+            {"company": "Beta", "title": "PM"},
+        ]
+        result = formatter.format(data, "en")
+        assert "## Acme" in result
+        assert "## Beta" in result
+        # Two separators
+        assert result.count("---") == 2
+
+    def test_section_key(self):
+        """Test section_key returns correct value."""
+        formatter = JobDescriptionFormatter()
+        assert formatter.section_key == "job_descriptions"

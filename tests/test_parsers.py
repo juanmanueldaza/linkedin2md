@@ -1,5 +1,6 @@
 """Tests for all parser modules."""
 
+from linkedin2md.parsers.jobs import JobDescriptionParser
 from linkedin2md.parsers.professional import (
     CertificationsParser,
     EducationParser,
@@ -465,3 +466,122 @@ class TestParserEdgeCases:
         data = {"profile": [{"Headline": "Engineer & Architect | Tech Lead"}]}
         result = parser.parse(data)
         assert "|" in result.get("en") or "|" in result.get("es")
+
+
+# =============================================================================
+# Job Description Parser
+# =============================================================================
+
+
+class TestJobDescriptionParser:
+    """Tests for JobDescriptionParser."""
+
+    def test_parse_single_job_description(self):
+        """Test parsing one valid job description entry returns correct dict."""
+        parser = JobDescriptionParser()
+        data = {
+            "job_descriptions": [
+                {
+                    "Company Name": "Acme Corp",
+                    "Job Title": "Senior Engineer",
+                    "Description": "Build and maintain systems.",
+                    "Application Date": "2024-01-15",
+                    "Status": "Applied",
+                }
+            ]
+        }
+        result = parser.parse(data)
+        assert len(result) == 1
+        assert result[0]["company"] == "Acme Corp"
+        assert result[0]["title"] == "Senior Engineer"
+        assert result[0]["description"] == "Build and maintain systems."
+        assert result[0]["date_applied"] == "2024-01-15"
+        assert result[0]["status"] == "Applied"
+
+    def test_parse_fallback_to_applications(self):
+        """Test fallback to job_applications CSV when job_descriptions missing."""
+        parser = JobDescriptionParser()
+        data = {
+            "job_applications": [
+                {
+                    "Company": "Beta Inc",
+                    "Title": "Developer",
+                    "Job Description": "Code stuff.",
+                    "Date Applied": "2024-02-01",
+                    "Status": "Interviewed",
+                }
+            ]
+        }
+        result = parser.parse(data)
+        assert len(result) == 1
+        assert result[0]["company"] == "Beta Inc"
+        assert result[0]["title"] == "Developer"
+
+    def test_parse_empty_data_returns_empty(self):
+        """Test empty or missing CSV keys return empty list."""
+        parser = JobDescriptionParser()
+        assert parser.parse({}) == []
+        assert parser.parse({"job_descriptions": []}) == []
+
+    def test_skip_empty_company_and_title(self):
+        """Test entries with both empty company and title are skipped."""
+        parser = JobDescriptionParser()
+        data = {
+            "job_descriptions": [
+                {"Company Name": "", "Job Title": ""},
+                {"Company Name": "Valid Co", "Job Title": "Valid Role"},
+            ]
+        }
+        result = parser.parse(data)
+        assert len(result) == 1
+        assert result[0]["company"] == "Valid Co"
+
+    def test_allow_title_only_entry(self):
+        """Test entry with empty company but valid title passes through."""
+        parser = JobDescriptionParser()
+        data = {
+            "job_descriptions": [
+                {"Company Name": "", "Job Title": "Ghost Role"},
+            ]
+        }
+        result = parser.parse(data)
+        assert len(result) == 1
+        assert result[0]["company"] == ""
+        assert result[0]["title"] == "Ghost Role"
+
+    def test_unicode_in_fields(self):
+        """Test handling of unicode characters in company/title/description."""
+        parser = JobDescriptionParser()
+        data = {
+            "job_descriptions": [
+                {
+                    "Company Name": "Café ñoño",
+                    "Job Title": "Développeur",
+                    "Description": "日本語の説明",
+                    "Application Date": "2024-03-01",
+                }
+            ]
+        }
+        result = parser.parse(data)
+        assert len(result) == 1
+        assert result[0]["company"] == "Café ñoño"
+        assert result[0]["title"] == "Développeur"
+        assert result[0]["description"] == "日本語の説明"
+
+    def test_missing_optional_fields_are_none(self):
+        """Test missing optional fields return None."""
+        parser = JobDescriptionParser()
+        data = {
+            "job_descriptions": [
+                {"Company Name": "Minimal Co", "Job Title": "Role"},
+            ]
+        }
+        result = parser.parse(data)
+        assert result[0]["description"] is None
+        assert result[0]["date_applied"] is None
+        assert result[0]["status"] is None
+
+    def test_section_key(self):
+        """Test section_key returns correct value."""
+        parser = JobDescriptionParser()
+        assert parser.section_key == "job_descriptions"

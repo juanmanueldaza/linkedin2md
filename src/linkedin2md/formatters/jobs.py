@@ -194,9 +194,14 @@ class JobDescriptionFormatter(BaseFormatter):
             date_applied = job.get("date_applied", "") or ""
             status = job.get("status", "") or ""
 
-            lines.append(f"## {company}")
-            if title:
+            heading = company or title or "Unknown"
+            lines.append(f"## {heading}")
+            if company and title:
                 lines.append(f"**Title:** {title}")
+            elif not company and title:
+                lines.append("**Company:** (not specified)")
+            if company and not title:
+                lines.append("**Title:** (not specified)")
             if description:
                 lines.append(f"**Description:** {description}")
             if date_applied:
