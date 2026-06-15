@@ -24,10 +24,10 @@ class ServiceEngagementsFormatter(BaseFormatter):
         lines.append("|------|------|--------|----------|")
 
         for e in data:
-            date = e.get("date", "") or ""
-            mtype = e.get("marketplace_type", "") or ""
-            amount = e.get("amount", "") or ""
-            currency = e.get("currency", "") or ""
+            date = self._escape_table_cell(e.get("date", ""))
+            mtype = self._escape_table_cell(e.get("marketplace_type", ""))
+            amount = self._escape_table_cell(e.get("amount", ""))
+            currency = self._escape_table_cell(e.get("currency", ""))
             lines.append(f"| {date} | {mtype} | {amount} | {currency} |")
 
         lines.append("")

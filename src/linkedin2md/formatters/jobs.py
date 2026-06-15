@@ -24,10 +24,10 @@ class JobApplicationsFormatter(BaseFormatter):
         lines.append("|------|---------|----------|--------|")
 
         for app in data:
-            date = app.get("date", "")
-            company = app.get("company", "")
-            title = app.get("title", "")
-            resume = app.get("resume_used", "") or ""
+            date = self._escape_table_cell(app.get("date", ""))
+            company = self._escape_table_cell(app.get("company", ""))
+            title = self._escape_table_cell(app.get("title", ""))
+            resume = self._escape_table_cell(app.get("resume_used", ""))
             lines.append(f"| {date} | {company} | {title} | {resume} |")
 
         lines.append("")
@@ -51,9 +51,9 @@ class SavedJobsFormatter(BaseFormatter):
         lines.append("|------|---------|----------|")
 
         for job in data:
-            date = job.get("date", "")
-            company = job.get("company", "")
-            title = job.get("title", "")
+            date = self._escape_table_cell(job.get("date", ""))
+            company = self._escape_table_cell(job.get("company", ""))
+            title = self._escape_table_cell(job.get("title", ""))
             lines.append(f"| {date} | {company} | {title} |")
 
         lines.append("")

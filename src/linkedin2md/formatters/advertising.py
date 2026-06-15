@@ -24,8 +24,8 @@ class AdsClickedFormatter(BaseFormatter):
         lines.append("|------|-------|")
 
         for ad in data:
-            date = ad.get("date", "")
-            ad_id = ad.get("ad_id", "") or ""
+            date = self._escape_table_cell(ad.get("date", ""))
+            ad_id = self._escape_table_cell(ad.get("ad_id", ""))
             lines.append(f"| {date} | {ad_id} |")
 
         lines.append("")
@@ -72,10 +72,10 @@ class LanAdsFormatter(BaseFormatter):
         lines.append("|------|--------|-------|----------|")
 
         for ad in data:
-            date = ad.get("date", "")
-            action = ad.get("action", "") or ""
-            ad_id = ad.get("ad_id", "") or ""
-            page = ad.get("page_app", "") or ""
+            date = self._escape_table_cell(ad.get("date", ""))
+            action = self._escape_table_cell(ad.get("action", ""))
+            ad_id = self._escape_table_cell(ad.get("ad_id", ""))
+            page = self._escape_table_cell(ad.get("page_app", ""))
             lines.append(f"| {date} | {action} | {ad_id} | {page} |")
 
         lines.append("")
@@ -99,10 +99,10 @@ class InferencesFormatter(BaseFormatter):
         lines.append("|----------|------|-------------|-----------|")
 
         for inf in data:
-            category = inf.get("category", "") or ""
-            itype = inf.get("type", "") or ""
-            desc = inf.get("description", "") or ""
-            inference = inf.get("inference", "") or ""
+            category = self._escape_table_cell(inf.get("category", ""))
+            itype = self._escape_table_cell(inf.get("type", ""))
+            desc = self._escape_table_cell(inf.get("description", ""))
+            inference = self._escape_table_cell(inf.get("inference", ""))
             lines.append(f"| {category} | {itype} | {desc} | {inference} |")
 
         lines.append("")

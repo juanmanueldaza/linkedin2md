@@ -104,9 +104,9 @@ class EndorsementsFormatter(BaseFormatter):
         lines.append("|-------|-------------|------|")
 
         for end in data:
-            skill = end.get("skill", "")
-            endorser = end.get("endorser", "")
-            date = end.get("date", "")
+            skill = self._escape_table_cell(end.get("skill", ""))
+            endorser = self._escape_table_cell(end.get("endorser", ""))
+            date = self._escape_table_cell(end.get("date", ""))
             lines.append(f"| {skill} | {endorser} | {date} |")
 
         lines.append("")
@@ -130,9 +130,9 @@ class EndorsementsGivenFormatter(BaseFormatter):
         lines.append("|-------|----------|------|")
 
         for end in data:
-            skill = end.get("skill", "")
-            endorsee = end.get("endorsee", "")
-            date = end.get("date", "")
+            skill = self._escape_table_cell(end.get("skill", ""))
+            endorsee = self._escape_table_cell(end.get("endorsee", ""))
+            date = self._escape_table_cell(end.get("date", ""))
             lines.append(f"| {skill} | {endorsee} | {date} |")
 
         lines.append("")

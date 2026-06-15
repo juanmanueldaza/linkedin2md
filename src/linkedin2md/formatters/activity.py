@@ -49,9 +49,9 @@ class LoginsFormatter(BaseFormatter):
         lines.append("|------|------------|------|")
 
         for login in data:
-            date = login.get("date", "")
-            ip = login.get("ip_address", "") or ""
-            login_type = login.get("login_type", "") or ""
+            date = self._escape_table_cell(login.get("date", ""))
+            ip = self._escape_table_cell(login.get("ip_address", ""))
+            login_type = self._escape_table_cell(login.get("login_type", ""))
             lines.append(f"| {date} | {ip} | {login_type} |")
 
         lines.append("")
@@ -75,10 +75,10 @@ class SecurityChallengesFormatter(BaseFormatter):
         lines.append("|------|------------|---------|------|")
 
         for c in data:
-            date = c.get("date", "")
-            ip = c.get("ip_address", "") or ""
-            country = c.get("country", "") or ""
-            ctype = c.get("challenge_type", "") or ""
+            date = self._escape_table_cell(c.get("date", ""))
+            ip = self._escape_table_cell(c.get("ip_address", ""))
+            country = self._escape_table_cell(c.get("country", ""))
+            ctype = self._escape_table_cell(c.get("challenge_type", ""))
             lines.append(f"| {date} | {ip} | {country} | {ctype} |")
 
         lines.append("")

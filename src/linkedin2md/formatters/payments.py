@@ -24,10 +24,10 @@ class ReceiptsFormatter(BaseFormatter):
         lines.append("|------|-------------|--------|----------|")
 
         for receipt in data:
-            date = receipt.get("date", "") or ""
-            desc = receipt.get("description", "") or ""
-            amount = receipt.get("amount", "") or ""
-            currency = receipt.get("currency", "") or ""
+            date = self._escape_table_cell(receipt.get("date", ""))
+            desc = self._escape_table_cell(receipt.get("description", ""))
+            amount = self._escape_table_cell(receipt.get("amount", ""))
+            currency = self._escape_table_cell(receipt.get("currency", ""))
             lines.append(f"| {date} | {desc} | {amount} | {currency} |")
 
         lines.append("")

@@ -48,9 +48,9 @@ class LearningReviewsFormatter(BaseFormatter):
         lines.append("|---------|--------|------|")
 
         for review in data:
-            content = review.get("content", "")
-            rating = review.get("rating", "")
-            date = review.get("date", "")
+            content = self._escape_table_cell(review.get("content", ""))
+            rating = self._escape_table_cell(review.get("rating", ""))
+            date = self._escape_table_cell(review.get("date", ""))
             lines.append(f"| {content} | {rating} | {date} |")
 
         lines.append("")

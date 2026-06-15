@@ -87,8 +87,8 @@ class ReactionsFormatter(BaseFormatter):
         lines.append("|------|------|------|")
 
         for reaction in data:
-            date = reaction.get("date", "")
-            rtype = reaction.get("type", "") or ""
+            date = self._escape_table_cell(reaction.get("date", ""))
+            rtype = self._escape_table_cell(reaction.get("type", ""))
             url = reaction.get("url", "") or ""
             link = f"[View]({url})" if url else ""
             lines.append(f"| {date} | {rtype} | {link} |")
@@ -114,7 +114,7 @@ class RepostsFormatter(BaseFormatter):
         lines.append("|------|------|")
 
         for repost in data:
-            date = repost.get("date", "")
+            date = self._escape_table_cell(repost.get("date", ""))
             url = repost.get("url", "") or ""
             link = f"[View]({url})" if url else ""
             lines.append(f"| {date} | {link} |")
@@ -140,8 +140,8 @@ class VotesFormatter(BaseFormatter):
         lines.append("|------|--------|------|")
 
         for vote in data:
-            date = vote.get("date", "")
-            option = vote.get("option", "") or ""
+            date = self._escape_table_cell(vote.get("date", ""))
+            option = self._escape_table_cell(vote.get("option", ""))
             url = vote.get("url", "") or ""
             link = f"[View]({url})" if url else ""
             lines.append(f"| {date} | {option} | {link} |")
@@ -167,7 +167,7 @@ class SavedItemsFormatter(BaseFormatter):
         lines.append("|----------|------|")
 
         for item in data:
-            saved_at = item.get("saved_at", "") or ""
+            saved_at = self._escape_table_cell(item.get("saved_at", ""))
             url = item.get("url", "") or ""
             link = f"[View]({url})" if url else ""
             lines.append(f"| {saved_at} | {link} |")
@@ -193,9 +193,9 @@ class EventsFormatter(BaseFormatter):
         lines.append("|------|------|--------|")
 
         for event in data:
-            name = event.get("name", "")
-            time = event.get("time", "") or ""
-            status = event.get("status", "") or ""
+            name = self._escape_table_cell(event.get("name", ""))
+            time = self._escape_table_cell(event.get("time", ""))
+            status = self._escape_table_cell(event.get("status", ""))
             lines.append(f"| {name} | {time} | {status} |")
 
         lines.append("")
@@ -219,8 +219,8 @@ class MediaFormatter(BaseFormatter):
         lines.append("|------|-------------|------|")
 
         for m in data:
-            date = m.get("date", "") or ""
-            desc = m.get("description", "") or ""
+            date = self._escape_table_cell(m.get("date", ""))
+            desc = self._escape_table_cell(m.get("description", ""))
             url = m.get("url", "") or ""
             link = f"[View]({url})" if url else ""
             lines.append(f"| {date} | {desc} | {link} |")

@@ -65,9 +65,34 @@ class BaseFormatter(ABC, SectionFormatter):
                 return multilingual[fb]
         return ""
 
-    def _escape_pipe(self, text: str) -> str:
-        """Escape pipe characters for Markdown tables."""
-        return text.replace("|", "\\|")
+    def _escape_pipe(self, text: str | None) -> str:
+        """Escape pipe characters for Markdown tables.
+
+        Backward compatibility alias for :meth:`_escape_table_cell`.
+        """
+        return self._escape_table_cell(text)
+
+    def _escape_table_cell(self, text: str | None) -> str:
+        """Escape a value for safe insertion into a Markdown table cell.
+
+        Replaces pipe characters with the escaped form (``\\|``) and collapses
+        any embedded newlines to a single space so a single CSV value cannot
+        break the row/column structure of the rendered Markdown table.
+
+        Args:
+            text: The raw cell value. ``None`` is treated as an empty cell.
+
+        Returns:
+            A string safe to embed between Markdown table pipes.
+        """
+        if text is None:
+            return ""
+        # Collapse newlines (and the whitespace around them) so a multi-line
+        # CSV cell cannot break the row layout.
+        cleaned = str(text).replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+        # Escape pipe characters — the only character with structural meaning
+        # inside a Markdown table row.
+        return cleaned.replace("|", "\\|")
 
     def _sanitize_url(self, url: str | None) -> str:
         """Sanitize URL for safe Markdown link rendering.

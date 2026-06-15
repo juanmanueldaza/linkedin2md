@@ -24,10 +24,10 @@ class ConnectionsFormatter(BaseFormatter):
         lines.append("|------|---------|----------|-----------|")
 
         for conn in data:
-            name = conn.get("name", "")
-            company = conn.get("company", "") or ""
-            position = conn.get("position", "") or ""
-            connected = conn.get("connected_on", "") or ""
+            name = self._escape_table_cell(conn.get("name", ""))
+            company = self._escape_table_cell(conn.get("company", ""))
+            position = self._escape_table_cell(conn.get("position", ""))
+            connected = self._escape_table_cell(conn.get("connected_on", ""))
             lines.append(f"| {name} | {company} | {position} | {connected} |")
 
         lines.append("")
@@ -71,9 +71,9 @@ class MembersFollowedFormatter(BaseFormatter):
         lines.append("|------|------|--------|")
 
         for member in data:
-            name = member.get("name", "")
-            date = member.get("date", "") or ""
-            status = member.get("status", "") or ""
+            name = self._escape_table_cell(member.get("name", ""))
+            date = self._escape_table_cell(member.get("date", ""))
+            status = self._escape_table_cell(member.get("status", ""))
             lines.append(f"| {name} | {date} | {status} |")
 
         lines.append("")
@@ -97,10 +97,10 @@ class InvitationsFormatter(BaseFormatter):
         lines.append("|------|-----|------|-----------|")
 
         for inv in data:
-            from_name = inv.get("from", "")
-            to_name = inv.get("to", "")
-            date = inv.get("sent_at", "") or ""
-            direction = inv.get("direction", "") or ""
+            from_name = self._escape_table_cell(inv.get("from", ""))
+            to_name = self._escape_table_cell(inv.get("to", ""))
+            date = self._escape_table_cell(inv.get("sent_at", ""))
+            direction = self._escape_table_cell(inv.get("direction", ""))
             lines.append(f"| {from_name} | {to_name} | {date} | {direction} |")
 
         lines.append("")
@@ -124,9 +124,9 @@ class ImportedContactsFormatter(BaseFormatter):
         lines.append("|------|-------|-------|")
 
         for contact in data:
-            name = contact.get("name", "") or ""
-            emails = contact.get("emails", "") or ""
-            title = contact.get("title", "") or ""
+            name = self._escape_table_cell(contact.get("name", ""))
+            emails = self._escape_table_cell(contact.get("emails", ""))
+            title = self._escape_table_cell(contact.get("title", ""))
             lines.append(f"| {name} | {emails} | {title} |")
 
         lines.append("")
