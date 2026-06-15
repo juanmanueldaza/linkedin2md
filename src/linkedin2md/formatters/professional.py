@@ -148,7 +148,7 @@ class CertificationsFormatter(BaseFormatter):
 
             if cert.get("url"):
                 lines.append("")
-                lines.append(f"[View Certificate]({cert['url']})")
+                lines.append(f"[View Certificate]({self._sanitize_url(cert['url'])})")
 
             lines.append("")
             lines.append("---")
@@ -216,7 +216,7 @@ class ProjectsFormatter(BaseFormatter):
 
             if proj.get("url"):
                 lines.append("")
-                lines.append(f"[View Project]({proj['url']})")
+                lines.append(f"[View Project]({self._sanitize_url(proj['url'])})")
 
             lines.append("")
             lines.append("---")

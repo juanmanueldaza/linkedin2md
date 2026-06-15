@@ -32,7 +32,7 @@ class PostsFormatter(BaseFormatter):
 
             if post.get("url"):
                 lines.append("")
-                lines.append(f"[View Post]({post['url']})")
+                lines.append(f"[View Post]({self._sanitize_url(post['url'])})")
 
             lines.append("")
             lines.append("---")
@@ -64,7 +64,7 @@ class CommentsFormatter(BaseFormatter):
             if message:
                 lines.append(f"> {message}")
             if url:
-                lines.append(f"[View]({url})")
+                lines.append(f"[View]({self._sanitize_url(url)})")
             lines.append("")
 
         return "\n".join(lines)
@@ -90,7 +90,7 @@ class ReactionsFormatter(BaseFormatter):
             date = reaction.get("date", "")
             rtype = reaction.get("type", "") or ""
             url = reaction.get("url", "") or ""
-            link = f"[View]({url})" if url else ""
+            link = f"[View]({self._sanitize_url(url)})" if self._sanitize_url(url) else ""
             lines.append(f"| {date} | {rtype} | {link} |")
 
         lines.append("")
@@ -116,7 +116,7 @@ class RepostsFormatter(BaseFormatter):
         for repost in data:
             date = repost.get("date", "")
             url = repost.get("url", "") or ""
-            link = f"[View]({url})" if url else ""
+            link = f"[View]({self._sanitize_url(url)})" if self._sanitize_url(url) else ""
             lines.append(f"| {date} | {link} |")
 
         lines.append("")
@@ -143,7 +143,7 @@ class VotesFormatter(BaseFormatter):
             date = vote.get("date", "")
             option = vote.get("option", "") or ""
             url = vote.get("url", "") or ""
-            link = f"[View]({url})" if url else ""
+            link = f"[View]({self._sanitize_url(url)})" if self._sanitize_url(url) else ""
             lines.append(f"| {date} | {option} | {link} |")
 
         lines.append("")
@@ -169,7 +169,7 @@ class SavedItemsFormatter(BaseFormatter):
         for item in data:
             saved_at = item.get("saved_at", "") or ""
             url = item.get("url", "") or ""
-            link = f"[View]({url})" if url else ""
+            link = f"[View]({self._sanitize_url(url)})" if self._sanitize_url(url) else ""
             lines.append(f"| {saved_at} | {link} |")
 
         lines.append("")
@@ -222,7 +222,7 @@ class MediaFormatter(BaseFormatter):
             date = m.get("date", "") or ""
             desc = m.get("description", "") or ""
             url = m.get("url", "") or ""
-            link = f"[View]({url})" if url else ""
+            link = f"[View]({self._sanitize_url(url)})" if self._sanitize_url(url) else ""
             lines.append(f"| {date} | {desc} | {link} |")
 
         lines.append("")

@@ -908,3 +908,57 @@ class TestJobDescriptionFormatter:
         """Test section_key returns correct value."""
         formatter = JobDescriptionFormatter()
         assert formatter.section_key == "job_descriptions"
+
+
+class TestUrlSanitizationIntegration:
+    """Regression test for issue #32: formatters must call _sanitize_url()."""
+
+    def test_professional_certificate_url_is_sanitized(self):
+        """Cert URLs go through _sanitize_url (issue #32)."""
+        from linkedin2md.formatters.professional import CertificationsFormatter
+        f = CertificationsFormatter()
+        certs = [{
+            "title": "AWS",
+            "url": "javascript:alert(1)",  # malicious
+        }]
+        result = f.format(certs, "en")
+        # Malicious URL should be replaced with empty string
+        assert "javascript:" not in result
+        assert "[View Certificate]()" in result or "View Certificate" not in result
+
+    def test_content_view_url_is_sanitized(self):
+        """Content view URLs go through _sanitize_url (issue #32)."""
+        from linkedin2md.formatters.content import CommentsFormatter
+        f = CommentsFormatter()
+        comments = [{
+            "date": "2024-01-01",
+            "message": "test",
+            "url": "javascript:alert(1)",
+        }]
+        result = f.format(comments, "en")
+        assert "javascript:" not in result
+
+    def test_https_url_preserved(self):
+        """Valid https URLs should be preserved in output."""
+        from linkedin2md.formatters.content import CommentsFormatter
+        f = CommentsFormatter()
+        comments = [{
+            "date": "2024-01-01",
+            "message": "test",
+            "url": "https://linkedin.com/post/123",
+        }]
+        result = f.format(comments, "en")
+        assert "https://linkedin.com/post/123" in result
+
+    def test_data_url_rejected(self):
+        """data: URLs should be rejected by sanitizer."""
+        from linkedin2md.formatters.content import CommentsFormatter
+        f = CommentsFormatter()
+        comments = [{
+            "date": "2024-01-01",
+            "message": "test",
+            "url": "data:text/html,<script>alert(1)</script>",
+        }]
+        result = f.format(comments, "en")
+        assert "data:" not in result
+        assert "script" not in result
