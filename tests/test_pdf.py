@@ -96,9 +96,10 @@ class TestConvertMdToPdf:
         """Test HTML.write_pdf() called with correct output path."""
         mock_md = _make_mock_markdown()
         mock_wp = _make_mock_weasyprint()
+        expected_path = Path("/tmp/out.pdf")
         with patch.dict(sys.modules, {"markdown": mock_md, "weasyprint": mock_wp}):
-            convert_md_to_pdf("# Hello", Path("/tmp/out.pdf"))
-        mock_wp.HTML.return_value.write_pdf.assert_called_once_with("/tmp/out.pdf")
+            convert_md_to_pdf("# Hello", expected_path)
+        mock_wp.HTML.return_value.write_pdf.assert_called_once_with(str(expected_path))
 
     # =========================================================================
     # HTML Template Structure

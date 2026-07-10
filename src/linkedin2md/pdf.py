@@ -11,6 +11,36 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
+def _demote_headings(markdown_text: str) -> str:
+    """Shift every Markdown heading down one level (H1 -> H2, etc.)."""
+    return "\n".join(
+        f"#{line}" if line.startswith("#") else line
+        for line in markdown_text.split("\n")
+    )
+
+
+def assemble_resume_markdown(sections: list[tuple[str, str]]) -> str:
+    """Combine per-section Markdown files into one coherent resume document.
+
+    Each section file is authored as a standalone document with its own
+    H1 title, since that's also how it's meant to be used on its own.
+    Concatenating them unchanged would produce several sibling H1s and
+    flatten sub-entries (e.g. company names) to the same level as section
+    titles. Every section except "profile" is demoted one heading level so
+    the combined document has a single H1 (the person's name), sections as
+    H2, and entries as H3 — matching the resume PDF's stylesheet.
+
+    Args:
+        sections: Ordered (section_name, content) pairs, e.g.
+            [("profile", "# Jane Doe..."), ("experience", "# Experience...")].
+    """
+    parts = [
+        content if name == "profile" else _demote_headings(content)
+        for name, content in sections
+    ]
+    return "\n\n".join(parts)
+
+
 def convert_md_to_pdf(markdown_content: str, pdf_path: Path) -> bool:
     """Convert generated profile markdown into an elegant, styled A4 print-ready PDF.
 

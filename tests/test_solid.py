@@ -149,7 +149,7 @@ class TestMarkdownFileWriter:
 
             assert path.exists()
             assert path.name == "test.md"
-            assert path.read_text() == "# Hello"
+            assert path.read_text(encoding="utf-8") == "# Hello"
 
     def test_write_adds_md_extension(self):
         with tempfile.TemporaryDirectory() as tmpdir:

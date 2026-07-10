@@ -246,7 +246,7 @@ class TestPdfFlag:
         """Test --pdf with -o sets both arguments."""
         args = _parse_args(["export.zip", "--pdf", "-o", "/tmp/out"])
         assert args.pdf is True
-        assert str(args.output) == "/tmp/out"
+        assert args.output == Path("/tmp/out")
 
     def test_pdf_no_sections_returns_1(self, caplog, tmp_path) -> None:
         """Test returns 1 when no profile section .md files exist."""
