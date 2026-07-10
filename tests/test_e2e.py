@@ -273,31 +273,33 @@ Phone,off""",
         assert "contact_settings.md" in file_names
 
         # Verify profile content
-        profile_content = (output_dir / "profile.md").read_text()
+        profile_content = (output_dir / "profile.md").read_text(encoding="utf-8")
         assert "John Doe" in profile_content
         assert "Senior Software Engineer" in profile_content
         assert "San Francisco" in profile_content
 
         # Verify skills content
-        skills_content = (output_dir / "skills.md").read_text()
+        skills_content = (output_dir / "skills.md").read_text(encoding="utf-8")
         assert "Python" in skills_content
         assert "AWS" in skills_content
 
         # Verify experience content
-        experience_content = (output_dir / "experience.md").read_text()
+        experience_content = (output_dir / "experience.md").read_text(encoding="utf-8")
         assert "Tech Corp" in experience_content
         assert "microservices" in experience_content
 
         # Verify new section content
-        causes_content = (output_dir / "causes.md").read_text()
+        causes_content = (output_dir / "causes.md").read_text(encoding="utf-8")
         assert "Causes" in causes_content
         assert "Environment" in causes_content
 
-        groups_content = (output_dir / "groups.md").read_text()
+        groups_content = (output_dir / "groups.md").read_text(encoding="utf-8")
         assert "Groups" in groups_content
         assert "Python Developers" in groups_content
 
-        contact_settings_content = (output_dir / "contact_settings.md").read_text()
+        contact_settings_content = (output_dir / "contact_settings.md").read_text(
+            encoding="utf-8"
+        )
         assert "Contact Settings" in contact_settings_content
         assert "Email" in contact_settings_content
 
@@ -314,7 +316,7 @@ Phone,off""",
         assert len(files) >= 10
 
         # Spanish headers should be used where applicable
-        profile_content = (output_dir / "profile.md").read_text()
+        profile_content = (output_dir / "profile.md").read_text(encoding="utf-8")
         assert "John Doe" in profile_content
 
     def test_connections_parsing(self, sample_linkedin_export: Path, tmp_path: Path):
@@ -326,7 +328,7 @@ Phone,off""",
 
         connections_file = output_dir / "connections.md"
         if connections_file.exists():
-            content = connections_file.read_text()
+            content = connections_file.read_text(encoding="utf-8")
             assert "Alice" in content or "Bob" in content
             # Should NOT contain the notes header
             assert "When exporting" not in content
@@ -342,7 +344,7 @@ Phone,off""",
 
         recommendations_file = output_dir / "recommendations.md"
         if recommendations_file.exists():
-            content = recommendations_file.read_text()
+            content = recommendations_file.read_text(encoding="utf-8")
             assert "exceptional engineer" in content or "Alice" in content
 
     def test_job_applications_parsing(
@@ -356,7 +358,7 @@ Phone,off""",
 
         jobs_file = output_dir / "job_applications.md"
         if jobs_file.exists():
-            content = jobs_file.read_text()
+            content = jobs_file.read_text(encoding="utf-8")
             assert "Dream Company" in content or "Staff Engineer" in content
 
     def test_empty_export(self, tmp_path: Path):
@@ -398,7 +400,7 @@ C++""",
         converter = create_converter(zip_path, output_dir)
         converter.convert(lang="es")
 
-        profile_content = (output_dir / "profile.md").read_text()
+        profile_content = (output_dir / "profile.md").read_text(encoding="utf-8")
         assert "José García" in profile_content
         assert "🚀" in profile_content or "Desarrollador" in profile_content
 
@@ -427,7 +429,7 @@ C++""",
 
         # Should not crash with special characters
         assert output_dir.exists()
-        profile_content = (output_dir / "profile.md").read_text()
+        profile_content = (output_dir / "profile.md").read_text(encoding="utf-8")
         assert "Test User" in profile_content
 
     def test_very_large_description(self, tmp_path: Path):
@@ -470,12 +472,12 @@ Test,User,Developer,{large_text}""",
 
         # First run
         files1 = converter.convert(lang="en")
-        content1 = (output_dir / "profile.md").read_text()
+        content1 = (output_dir / "profile.md").read_text(encoding="utf-8")
 
         # Second run (overwrite)
         converter2 = create_converter(sample_linkedin_export, output_dir)
         files2 = converter2.convert(lang="en")
-        content2 = (output_dir / "profile.md").read_text()
+        content2 = (output_dir / "profile.md").read_text(encoding="utf-8")
 
         assert len(files1) == len(files2)
         assert content1 == content2
@@ -520,7 +522,7 @@ class TestSecurityE2E:
         # Should complete without executing anything malicious
         assert output_dir.exists()
 
-        profile_content = (output_dir / "profile.md").read_text()
+        profile_content = (output_dir / "profile.md").read_text(encoding="utf-8")
         # The content should be treated as plain text, not executed
         assert "Test User" in profile_content
 
