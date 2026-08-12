@@ -98,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Moved analytics to centralized UMD on data.daza.ar
 - GitHub MCP restored to wrapper script for automatic token detection
 - opencode.json MCP config overhaul (dedup servers, sequential-thinking)
-- Author email updated to juan@daza.ar
+- Author email updated to juanmanueldaza@gmail.com
 - CODE_OF_CONDUCT.md and SECURITY.md updated with N3RV references
 
 ### Fixed
