@@ -178,6 +178,8 @@ class PublicationsFormatter(SimpleListFormatter):
     def fields(self) -> list[str]:
         return ["title", "publisher", "date", "url"]
 
+    url_fields = frozenset({"url"})
+
 
 @register_formatter
 class VolunteerExperienceFormatter(SimpleListFormatter):

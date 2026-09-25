@@ -43,10 +43,12 @@ class ServiceOpportunitiesFormatter(BaseFormatter):
         lines = ["# Service Marketplace Opportunities", ""]
 
         for opp in data:
-            date = opp.get("date", "") or ""
-            category = opp.get("category", "") or ""
-            location = opp.get("location", "") or ""
-            status = opp.get("status", "") or ""
+            date = self._escape_inline(opp.get("date", "") or "").replace("\n", " ")
+            category = self._escape_heading(opp.get("category", "") or "")
+            location = self._escape_inline(opp.get("location", "") or "").replace(
+                "\n", " "
+            )
+            status = self._escape_inline(opp.get("status", "") or "").replace("\n", " ")
 
             lines.append(f"## {category}")
             lines.append(f"**Date:** {date}")
@@ -59,7 +61,7 @@ class ServiceOpportunitiesFormatter(BaseFormatter):
             if qa:
                 lines.append("")
                 lines.append("**Details:**")
-                lines.append(f"> {qa}")
+                lines.append(self._blockquote(qa))
 
             lines.append("")
             lines.append("---")

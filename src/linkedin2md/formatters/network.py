@@ -42,7 +42,7 @@ class CompaniesFollowedFormatter(BaseFormatter):
     def _format_content(self, data: list, lang: str) -> str:
         lines = ["# Companies Followed", ""]
         for company in data:
-            name = company.get("name", "")
+            name = self._escape_list_item(company.get("name", ""))
             lines.append(f"- {name}")
         lines.append("")
         return "\n".join(lines)

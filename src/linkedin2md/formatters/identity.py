@@ -24,19 +24,26 @@ class VerificationsFormatter(BaseFormatter):
                 v.get("middle_name", ""),
                 v.get("last_name", ""),
             ]
-            name = " ".join(p for p in name_parts if p and p != "N/A")
+            name = self._escape_joined(
+                " ".join(p for p in name_parts if p and p != "N/A")
+            )
 
             lines.append(f"## {name}")
             if v.get("verification_type"):
-                lines.append(f"**Type:** {v['verification_type']}")
+                value = self._escape_inline(v["verification_type"]).replace("\n", " ")
+                lines.append(f"**Type:** {value}")
             if v.get("document_type"):
-                lines.append(f"**Document:** {v['document_type']}")
+                value = self._escape_inline(v["document_type"]).replace("\n", " ")
+                lines.append(f"**Document:** {value}")
             if v.get("provider"):
-                lines.append(f"**Provider:** {v['provider']}")
+                value = self._escape_inline(v["provider"]).replace("\n", " ")
+                lines.append(f"**Provider:** {value}")
             if v.get("verified_date"):
-                lines.append(f"**Verified:** {v['verified_date']}")
+                value = self._escape_inline(v["verified_date"]).replace("\n", " ")
+                lines.append(f"**Verified:** {value}")
             if v.get("expiry_date") and v.get("expiry_date") != "N/A":
-                lines.append(f"**Expires:** {v['expiry_date']}")
+                value = self._escape_inline(v["expiry_date"]).replace("\n", " ")
+                lines.append(f"**Expires:** {value}")
 
             lines.append("")
 
@@ -55,7 +62,7 @@ class IdentityAssetsFormatter(BaseFormatter):
         lines = ["# Uploaded Documents", ""]
 
         for asset in data:
-            name = asset.get("name", "")
+            name = self._escape_list_item(asset.get("name", ""))
             has_content = asset.get("has_content", False)
             status = "(with content)" if has_content else "(no content)"
             lines.append(f"- {name} {status}")

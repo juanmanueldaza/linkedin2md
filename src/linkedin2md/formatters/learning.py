@@ -19,7 +19,7 @@ class LearningFormatter(BaseFormatter):
         lines = ["# LinkedIn Learning", ""]
 
         for course in data:
-            title = course.get("title", "")
+            title = self._escape_list_item(course.get("title", ""))
             completed = course.get("completed_at")
             status = "Completed" if completed else "In Progress"
             lines.append(f"- **{title}** ({status})")

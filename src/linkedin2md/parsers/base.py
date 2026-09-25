@@ -85,7 +85,7 @@ class BaseParser(ABC, SectionParser):
             return result  # type: ignore[return-type]
         # Prefix match: key_NUMBER (LinkedIn user-ID suffix on filenames)
         pattern = re.compile(rf"^{re.escape(key)}_\d+$")
-        for k in raw_data:
+        for k in dict.keys(raw_data):
             if pattern.fullmatch(k):
                 return raw_data.get(k, [])
         return []

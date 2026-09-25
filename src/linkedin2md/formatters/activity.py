@@ -21,8 +21,8 @@ class SearchQueriesFormatter(BaseFormatter):
         lines.append("|------|-------|")
 
         for q in data:
-            time = q.get("time", "")
-            query = self._escape_pipe(q.get("query", ""))
+            time = self._escape_table_cell(q.get("time", ""))
+            query = self._escape_table_cell(q.get("query", ""))
             lines.append(f"| {time} | {query} |")
 
         lines.append("")

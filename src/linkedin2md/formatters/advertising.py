@@ -42,8 +42,11 @@ class AdTargetingFormatter(BaseFormatter):
 
         for key, value in data.items():
             if value:
-                formatted_key = key.replace("_", " ").title()
-                lines.append(f"**{formatted_key}:** {value}")
+                formatted_key = self._escape_inline(
+                    str(key).replace("_", " ").title()
+                ).replace("\n", " ")
+                formatted_value = self._escape_inline(value).replace("\n", " ")
+                lines.append(f"**{formatted_key}:** {formatted_value}")
                 lines.append("")
 
         return "\n".join(lines)

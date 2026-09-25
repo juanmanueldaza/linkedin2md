@@ -19,17 +19,18 @@ class PostsFormatter(BaseFormatter):
         lines = ["# Posts", ""]
 
         for post in data:
-            date = post.get("date", "")
+            date = self._escape_heading(post.get("date", ""))
             lines.append(f"## {date}")
 
             content = self._get_text(post.get("content"), lang)
             if content:
                 lines.append("")
-                lines.append(content)
+                lines.append(self._escape_block(content))
 
-            if post.get("url"):
+            link = self._render_link("View Post", post.get("url"))
+            if link:
                 lines.append("")
-                lines.append(f"[View Post]({self._sanitize_url(post['url'])})")
+                lines.append(link)
 
             lines.append("")
             lines.append("---")
@@ -50,15 +51,15 @@ class CommentsFormatter(BaseFormatter):
         lines = ["# Comments", ""]
 
         for comment in data:
-            date = comment.get("date", "")
+            date = self._escape_inline(comment.get("date", "")).replace("\n", " ")
             message = self._get_text(comment.get("message"), lang)
-            url = comment.get("url", "")
+            link = self._render_link("View", comment.get("url", ""))
 
             lines.append(f"**{date}**")
             if message:
-                lines.append(f"> {message}")
-            if url:
-                lines.append(f"[View]({self._sanitize_url(url)})")
+                lines.append(self._blockquote(message))
+            if link:
+                lines.append(link)
             lines.append("")
 
         return "\n".join(lines)
@@ -80,9 +81,7 @@ class ReactionsFormatter(BaseFormatter):
         for reaction in data:
             date = self._escape_table_cell(reaction.get("date", ""))
             rtype = self._escape_table_cell(reaction.get("type", ""))
-            url = reaction.get("url", "") or ""
-            safe_url = self._sanitize_url(url)
-            link = f"[View]({safe_url})" if safe_url else ""
+            link = self._render_table_link("View", reaction.get("url", ""))
             lines.append(f"| {date} | {rtype} | {link} |")
 
         lines.append("")
@@ -104,9 +103,7 @@ class RepostsFormatter(BaseFormatter):
 
         for repost in data:
             date = self._escape_table_cell(repost.get("date", ""))
-            url = repost.get("url", "") or ""
-            safe_url = self._sanitize_url(url)
-            link = f"[View]({safe_url})" if safe_url else ""
+            link = self._render_table_link("View", repost.get("url", ""))
             lines.append(f"| {date} | {link} |")
 
         lines.append("")
@@ -129,9 +126,7 @@ class VotesFormatter(BaseFormatter):
         for vote in data:
             date = self._escape_table_cell(vote.get("date", ""))
             option = self._escape_table_cell(vote.get("option", ""))
-            url = vote.get("url", "") or ""
-            safe_url = self._sanitize_url(url)
-            link = f"[View]({safe_url})" if safe_url else ""
+            link = self._render_table_link("View", vote.get("url", ""))
             lines.append(f"| {date} | {option} | {link} |")
 
         lines.append("")
@@ -153,9 +148,7 @@ class SavedItemsFormatter(BaseFormatter):
 
         for item in data:
             saved_at = self._escape_table_cell(item.get("saved_at", ""))
-            url = item.get("url", "") or ""
-            safe_url = self._sanitize_url(url)
-            link = f"[View]({safe_url})" if safe_url else ""
+            link = self._render_table_link("View", item.get("url", ""))
             lines.append(f"| {saved_at} | {link} |")
 
         lines.append("")
@@ -201,9 +194,7 @@ class MediaFormatter(BaseFormatter):
         for m in data:
             date = self._escape_table_cell(m.get("date", ""))
             desc = self._escape_table_cell(m.get("description", ""))
-            url = m.get("url", "") or ""
-            safe_url = self._sanitize_url(url)
-            link = f"[View]({safe_url})" if safe_url else ""
+            link = self._render_table_link("View", m.get("url", ""))
             lines.append(f"| {date} | {desc} | {link} |")
 
         lines.append("")
@@ -222,10 +213,12 @@ class MessagesFormatter(BaseFormatter):
         lines = ["# Messages", ""]
 
         for msg in data:
-            date = msg.get("date", "")
-            from_name = msg.get("from_name", "")
-            to_name = msg.get("to_name", "")
-            subject = msg.get("subject", "") or ""
+            date = self._escape_heading(msg.get("date", ""))
+            from_name = self._escape_inline(msg.get("from_name", "")).replace("\n", " ")
+            to_name = self._escape_inline(msg.get("to_name", "")).replace("\n", " ")
+            subject = self._escape_inline(msg.get("subject", "") or "").replace(
+                "\n", " "
+            )
             content = msg.get("content", "") or ""
 
             lines.append(f"## {date}")
@@ -235,7 +228,7 @@ class MessagesFormatter(BaseFormatter):
             if content:
                 lines.append("")
                 truncated = self._truncate_text(content, 500, "message.content")
-                lines.append(f"> {truncated}")
+                lines.append(self._blockquote(truncated))
             lines.append("")
             lines.append("---")
             lines.append("")
@@ -255,8 +248,8 @@ class ScriptFormatter(BaseFormatter):
         lines = ["# Scripts", ""]
 
         for script in data:
-            name = script.get("name", "")
-            date = script.get("date", "")
+            name = self._escape_heading(script.get("name", ""))
+            date = self._escape_inline(script.get("date", "")).replace("\n", " ")
             content = script.get("content", "") or ""
 
             lines.append(f"## {name}")
@@ -264,7 +257,7 @@ class ScriptFormatter(BaseFormatter):
                 lines.append(f"**Date:** {date}")
             if content:
                 lines.append("")
-                lines.append(content)
+                lines.append(self._escape_block(content))
             lines.append("")
             lines.append("---")
             lines.append("")
@@ -284,9 +277,9 @@ class ArticlesFormatter(BaseFormatter):
         lines = ["# Published Articles", ""]
 
         for article in data:
-            title = article.get("title", "")
-            date = article.get("date", "")
-            author = article.get("author", "")
+            title = self._escape_heading(article.get("title", ""))
+            date = self._escape_inline(article.get("date", "")).replace("\n", " ")
+            author = self._escape_inline(article.get("author", "")).replace("\n", " ")
             summary = article.get("summary", "")
 
             lines.append(f"## {title}")
@@ -296,7 +289,7 @@ class ArticlesFormatter(BaseFormatter):
                 lines.append(f"**Author:** {author}")
             if summary:
                 lines.append("")
-                lines.append(summary)
+                lines.append(self._escape_block(summary))
             lines.append("")
             lines.append("---")
             lines.append("")

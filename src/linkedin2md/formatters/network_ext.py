@@ -26,3 +26,5 @@ class GroupsFormatter(SimpleListFormatter):
     @property
     def fields(self) -> list[str]:
         return ["name", "url"]
+
+    url_fields = frozenset({"url"})

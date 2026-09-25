@@ -21,12 +21,13 @@ class ProfileFormatter(BaseFormatter):
 
         name = data.get("name", "")
         if name:
-            lines.append(f"# {name}")
+            lines.append(f"# {self._escape_heading(name)}")
             lines.append("")
 
         title = self._get_text(data.get("title"), lang)
         if title:
-            lines.append(f"**{title}**")
+            title_value = self._escape_inline(title).replace("\n", " ")
+            lines.append(f"**{title_value}**")
             lines.append("")
 
         contact_parts = []
@@ -37,58 +38,62 @@ class ProfileFormatter(BaseFormatter):
         if data.get("phone"):
             contact_parts.append(data["phone"])
         if contact_parts:
-            lines.append(" | ".join(contact_parts))
+            lines.append(
+                " | ".join(
+                    self._escape_inline(part).replace("\n", " ")
+                    for part in contact_parts
+                )
+            )
             lines.append("")
 
         summary = self._get_text(data.get("summary"), lang)
         if summary:
             lines.append("## Summary")
             lines.append("")
-            lines.append(summary)
+            lines.append(self._escape_block(summary))
             lines.append("")
 
         meta = data.get("profile_meta", {})
         if meta:
             detail_lines: list[str] = []
             if meta.get("industry"):
-                detail_lines.append(
-                    f"- **Industry:** {self._escape_table_cell(meta['industry'])}"
-                )
+                industry = self._escape_inline(meta["industry"]).replace("\n", " ")
+                detail_lines.append(f"- **Industry:** {industry}")
             if meta.get("maiden_name"):
-                detail_lines.append(
-                    f"- **Maiden Name:** {self._escape_table_cell(meta['maiden_name'])}"
+                maiden_name = self._escape_inline(meta["maiden_name"]).replace(
+                    "\n", " "
                 )
+                detail_lines.append(f"- **Maiden Name:** {maiden_name}")
             if meta.get("public_profile_url"):
-                url = self._sanitize_url(meta["public_profile_url"])
-                detail_lines.append(
-                    f"- **Profile URL:** "
-                    f"[{self._escape_table_cell(meta['public_profile_url'])}]"
-                    f"({url})"
+                link = self._render_link(
+                    meta["public_profile_url"], meta["public_profile_url"]
                 )
+                if link:
+                    detail_lines.append(f"- **Profile URL:** {link}")
             if meta.get("address"):
-                detail_lines.append(
-                    f"- **Address:** {self._escape_table_cell(meta['address'])}"
-                )
+                address = self._escape_inline(meta["address"]).replace("\n", " ")
+                detail_lines.append(f"- **Address:** {address}")
             if meta.get("twitter"):
-                detail_lines.append(
-                    f"- **Twitter:** {self._escape_table_cell(meta['twitter'])}"
-                )
+                twitter = self._escape_inline(meta["twitter"]).replace("\n", " ")
+                detail_lines.append(f"- **Twitter:** {twitter}")
             if meta.get("websites"):
                 for site in meta["websites"]:
-                    detail_lines.append(
-                        f"- **Website:** {self._escape_table_cell(site)}"
-                    )
+                    website = self._render_plain_url(site)
+                    if website:
+                        detail_lines.append(f"- **Website:** {website}")
             if meta.get("birth_date"):
-                detail_lines.append(
-                    f"- **Birth Date:** {self._escape_table_cell(meta['birth_date'])}"
-                )
+                birth_date = self._escape_inline(meta["birth_date"]).replace("\n", " ")
+                detail_lines.append(f"- **Birth Date:** {birth_date}")
             if meta.get("registered_at"):
-                detail_lines.append(
-                    f"- **Member Since:** "
-                    f"{self._escape_table_cell(meta['registered_at'])}"
+                registered_at = self._escape_inline(meta["registered_at"]).replace(
+                    "\n", " "
                 )
+                detail_lines.append(f"- **Member Since:** {registered_at}")
             if meta.get("connections_count"):
-                detail_lines.append(f"- **Connections:** {meta['connections_count']}")
+                connections = self._escape_inline(meta["connections_count"]).replace(
+                    "\n", " "
+                )
+                detail_lines.append(f"- **Connections:** {connections}")
             if detail_lines:
                 lines.append("## Profile Details")
                 lines.append("")

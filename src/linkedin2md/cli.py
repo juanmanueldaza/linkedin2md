@@ -8,14 +8,37 @@ import logging
 import sys
 from pathlib import Path
 
-from linkedin2md import __version__
+from linkedin2md import CONVERSION_CONTRACT, __version__
 from linkedin2md.converter import create_converter
+from linkedin2md.diagnostics import StrictConversionError, write_report
+from linkedin2md.limits import DEFAULT_MAX_ARCHIVE_FILE_SIZE_BYTES, MIB
 from linkedin2md.progress import show_progress
 
 logger = logging.getLogger(__name__)
 
-# Maximum allowed file size in megabytes (500 MB)
-MAX_FILE_SIZE_MB = 500
+MAX_FILE_SIZE_MB = DEFAULT_MAX_ARCHIVE_FILE_SIZE_BYTES // MIB
+
+
+def _paths_same(first: Path, second: Path) -> bool:
+    try:
+        if first.resolve() == second.resolve():
+            return True
+        return first.samefile(second)
+    except OSError:
+        return False
+
+
+def _report_path_conflicts(source: Path, output_dir: Path, report: Path | None) -> bool:
+    if report is None:
+        return False
+    if _paths_same(source, report):
+        return True
+    if _paths_same(output_dir / "profile.pdf", report):
+        return True
+    return any(
+        _paths_same(output_dir / output_file, report)
+        for output_file in CONVERSION_CONTRACT.output_files
+    )
 
 
 def main() -> int:
@@ -47,20 +70,60 @@ def main() -> int:
         )
         return 1
 
-    try:
-        # Use factory to create converter with all dependencies
-        converter = create_converter(args.source, args.output)
-        with show_progress("Extracting and converting export..."):
-            files = converter.convert(lang=args.lang)
-    except Exception as e:
-        logger.error("%s", e)
+    if _report_path_conflicts(args.source, args.output, args.report):
+        logger.error("Report path must not overwrite the source or generated output")
         return 1
 
-    # Success messages go to stdout (user-facing output)
-    if not args.quiet:
+    use_report = (
+        getattr(args, "strict", False) or getattr(args, "report", None) is not None
+    )
+    report = None
+    strict_failed = False
+    try:
+        converter = create_converter(args.source, args.output)
+        with show_progress("Extracting and converting export..."):
+            if use_report:
+                try:
+                    result = converter.convert_with_report(
+                        lang=args.lang,
+                        strict=getattr(args, "strict", False),
+                    )
+                except StrictConversionError as error:
+                    report = error.report
+                    files = list(error.files)
+                    strict_failed = True
+                else:
+                    files = list(result.files)
+                    report = result.report
+            else:
+                files = converter.convert(lang=args.lang)
+    except Exception as error:
+        logger.error("%s", error)
+        return 1
+
+    if report is not None and getattr(args, "report", None) is not None:
+        try:
+            write_report(args.report, report)
+        except Exception as error:
+            logger.error("Failed to write conversion report: %s", error)
+            return 1
+
+    fatal_failed = (
+        report is not None and getattr(report, "fatal_error", None) is not None
+    )
+
+    if not args.quiet and (files or (not strict_failed and not fatal_failed)):
         print(f"Created {len(files)} files in {args.output}/")
-        for f in files:
-            print(f"  - {f.name}")
+        for file in files:
+            print(f"  - {file.name}")
+
+    if strict_failed:
+        logger.error("Strict conversion failed")
+        return 1
+
+    if fatal_failed:
+        logger.error("Conversion failed")
+        return 1
 
     # Step 4: Optional PDF Generation
     if args.pdf:
@@ -136,6 +199,17 @@ def _parse_args(argv: list[str]) -> argparse.Namespace:
         "--pdf",
         action="store_true",
         help="Generate an elegant A4 PDF resume from your profile",
+    )
+    parser.add_argument(
+        "--strict",
+        action="store_true",
+        help="Fail when diagnostics report conversion problems",
+    )
+    parser.add_argument(
+        "--report",
+        type=Path,
+        metavar="PATH",
+        help="Write a private conversion diagnostics JSON report",
     )
     parser.add_argument(
         "-q",

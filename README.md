@@ -55,6 +55,7 @@ linkedin2md Complete_LinkedInDataExport.zip
 linkedin2md export.zip -o ./my-profile
 linkedin2md export.zip --lang es
 linkedin2md export.zip --pdf  # Generate beautiful PDF CV alongside Markdown files
+linkedin2md export.zip --report report.json --strict  # Save diagnostics and fail on omissions
 ```
 
 Then drag the output folder into your favorite AI tool.
@@ -67,6 +68,8 @@ Then drag the output folder into your favorite AI tool.
 | `-o, --output` | Output directory | `linkedin_export` |
 | `--lang` | Output language (`en` or `es`) | `en` |
 | `--pdf` | Generate an elegant A4 PDF resume from your profile | `False` |
+| `--strict` | Return non-zero when diagnostics report conversion problems | `False` |
+| `--report PATH` | Write a private JSON conversion diagnostics report | - |
 
 ## How to Export Your LinkedIn Data
 

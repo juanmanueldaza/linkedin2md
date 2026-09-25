@@ -20,9 +20,27 @@ except PackageNotFoundError:
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 # Main public API
+from linkedin2md.contract import (  # noqa: E402
+    CONVERSION_CONTRACT,
+    ConversionContract,
+    SectionSpec,
+)
 from linkedin2md.converter import (  # noqa: E402
     LinkedInToMarkdownConverter,
     create_converter,
+)
+from linkedin2md.diagnostics import (  # noqa: E402
+    ConversionReport,
+    ConversionResult,
+    DiagnosticEvent,
+    StrictConversionError,
+)
+from linkedin2md.limits import (  # noqa: E402
+    DEFAULT_EXTRACTION_LIMITS,
+    ExtractionLimitError,
+    ExtractionLimits,
+    OutputLimitError,
+    UnsafeArchiveError,
 )
 
 # Protocols for type hints and custom implementations
@@ -51,6 +69,18 @@ __all__ = [
     # Main API
     "LinkedInToMarkdownConverter",
     "create_converter",
+    "ConversionReport",
+    "ConversionResult",
+    "DiagnosticEvent",
+    "StrictConversionError",
+    "CONVERSION_CONTRACT",
+    "ConversionContract",
+    "SectionSpec",
+    "DEFAULT_EXTRACTION_LIMITS",
+    "ExtractionLimitError",
+    "ExtractionLimits",
+    "OutputLimitError",
+    "UnsafeArchiveError",
     # Protocols
     "BilingualText",
     "DataExtractor",

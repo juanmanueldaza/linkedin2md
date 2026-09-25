@@ -19,23 +19,26 @@ class RecommendationsFormatter(BaseFormatter):
         lines = ["# Recommendations", ""]
 
         for rec in data:
-            author = rec.get("author", "")
+            author = self._escape_heading(rec.get("author", ""))
             lines.append(f"## From {author}")
 
             meta_parts = []
             if rec.get("title"):
-                meta_parts.append(f"**{rec['title']}**")
+                title = self._escape_inline(rec["title"]).replace("\n", " ")
+                meta_parts.append(f"**{title}**")
             if rec.get("company"):
-                meta_parts.append(f"at {rec['company']}")
+                company = self._escape_inline(rec["company"]).replace("\n", " ")
+                meta_parts.append(f"at {company}")
             if rec.get("date"):
-                meta_parts.append(f"| {rec['date']}")
+                date = self._escape_inline(rec["date"]).replace("\n", " ")
+                meta_parts.append(f"| {date}")
             if meta_parts:
                 lines.append(" ".join(meta_parts))
 
             text = self._get_text(rec.get("text"), lang)
             if text:
                 lines.append("")
-                lines.append(f"> {text}")
+                lines.append(self._blockquote(text))
 
             lines.append("")
             lines.append("---")
@@ -56,23 +59,26 @@ class RecommendationsGivenFormatter(BaseFormatter):
         lines = ["# Recommendations Given", ""]
 
         for rec in data:
-            recipient = rec.get("recipient", "")
+            recipient = self._escape_heading(rec.get("recipient", ""))
             lines.append(f"## To {recipient}")
 
             meta_parts = []
             if rec.get("title"):
-                meta_parts.append(f"**{rec['title']}**")
+                title = self._escape_inline(rec["title"]).replace("\n", " ")
+                meta_parts.append(f"**{title}**")
             if rec.get("company"):
-                meta_parts.append(f"at {rec['company']}")
+                company = self._escape_inline(rec["company"]).replace("\n", " ")
+                meta_parts.append(f"at {company}")
             if rec.get("date"):
-                meta_parts.append(f"| {rec['date']}")
+                date = self._escape_inline(rec["date"]).replace("\n", " ")
+                meta_parts.append(f"| {date}")
             if meta_parts:
                 lines.append(" ".join(meta_parts))
 
             text = self._get_text(rec.get("text"), lang)
             if text:
                 lines.append("")
-                lines.append(f"> {text}")
+                lines.append(self._blockquote(text))
 
             lines.append("")
             lines.append("---")

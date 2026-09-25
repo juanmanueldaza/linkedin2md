@@ -16,7 +16,7 @@ class SkillsFormatter(BaseFormatter):
         return "skills"
 
     def _format_content(self, data: list, lang: str) -> str:
-        return "# Skills\n\n" + ", ".join(data) + "\n"
+        return "# Skills\n\n" + self._escape_joined(data) + "\n"
 
 
 @register_formatter
@@ -31,21 +31,22 @@ class ExperienceFormatter(BaseFormatter):
         lines = ["# Experience", ""]
 
         for exp in data:
-            company = exp.get("company", "")
+            company = self._escape_heading(exp.get("company", ""))
             role = self._get_text(exp.get("role"), lang)
 
             lines.append(f"## {company}")
 
             date_parts = []
             if exp.get("start"):
-                date_parts.append(exp["start"])
+                date_parts.append(self._escape_inline(exp["start"]).replace("\n", " "))
             if exp.get("end"):
-                date_parts.append(exp["end"])
+                date_parts.append(self._escape_inline(exp["end"]).replace("\n", " "))
             else:
                 date_parts.append("Present")
 
-            location = exp.get("location", "")
-            meta = f"**{role}**" if role else ""
+            location = self._escape_inline(exp.get("location", "")).replace("\n", " ")
+            role_value = self._escape_inline(role).replace("\n", " ")
+            meta = f"**{role_value}**" if role else ""
             if date_parts:
                 meta += " | " + " - ".join(date_parts)
             if location:
@@ -58,7 +59,7 @@ class ExperienceFormatter(BaseFormatter):
             for ach in achievements:
                 text = self._get_text(ach.get("text"), lang)
                 if text:
-                    lines.append(f"- {text}")
+                    lines.append(f"- {self._escape_list_item(text)}")
 
             lines.append("")
             lines.append("---")
@@ -79,41 +80,47 @@ class EducationFormatter(BaseFormatter):
         lines = ["# Education", ""]
 
         for edu in data:
-            institution = edu.get("institution", "")
+            institution = self._escape_heading(edu.get("institution", ""))
             degree = self._get_text(edu.get("degree"), lang)
 
             lines.append(f"## {institution}")
 
             meta_parts = []
             if degree:
-                meta_parts.append(f"**{degree}**")
+                degree_value = self._escape_inline(degree).replace("\n", " ")
+                meta_parts.append(f"**{degree_value}**")
             if edu.get("start"):
-                date_str = edu["start"]
+                date_parts = [self._escape_inline(edu["start"]).replace("\n", " ")]
                 if edu.get("end"):
-                    date_str += f" - {edu['end']}"
-                meta_parts.append(date_str)
+                    date_parts.append(
+                        self._escape_inline(edu["end"]).replace("\n", " ")
+                    )
+                meta_parts.append(" - ".join(date_parts))
             if meta_parts:
                 lines.append(" | ".join(meta_parts))
             lines.append("")
 
             field = edu.get("field")
             if field:
-                lines.append(f"**Field of Study:** {field}")
+                field_value = self._escape_inline(field).replace("\n", " ")
+                lines.append(f"**Field of Study:** {field_value}")
                 lines.append("")
 
             grade = edu.get("grade")
             if grade:
-                lines.append(f"**Grade:** {grade}")
+                grade_value = self._escape_inline(grade).replace("\n", " ")
+                lines.append(f"**Grade:** {grade_value}")
                 lines.append("")
 
             notes = self._get_text(edu.get("notes"), lang)
             if notes:
-                lines.append(f"> {notes}")
+                lines.append(self._blockquote(notes))
                 lines.append("")
 
             activities = edu.get("activities")
             if activities:
-                lines.append(f"Activities: {activities}")
+                activity_value = self._escape_inline(activities).replace("\n", " ")
+                lines.append(f"Activities: {activity_value}")
                 lines.append("")
 
             lines.append("---")
@@ -134,20 +141,23 @@ class CertificationsFormatter(BaseFormatter):
         lines = ["# Certifications", ""]
 
         for cert in data:
-            name = cert.get("name", "")
+            name = self._escape_heading(cert.get("name", ""))
             lines.append(f"## {name}")
 
             meta_parts = []
             if cert.get("issuer"):
-                meta_parts.append(f"**{cert['issuer']}**")
+                issuer = self._escape_inline(cert["issuer"]).replace("\n", " ")
+                meta_parts.append(f"**{issuer}**")
             if cert.get("date"):
-                meta_parts.append(cert["date"])
+                date = self._escape_inline(cert["date"]).replace("\n", " ")
+                meta_parts.append(date)
             if meta_parts:
                 lines.append(" | ".join(meta_parts))
 
-            if cert.get("url"):
+            link = self._render_link("View Certificate", cert.get("url"))
+            if link:
                 lines.append("")
-                lines.append(f"[View Certificate]({self._sanitize_url(cert['url'])})")
+                lines.append(link)
 
             lines.append("")
             lines.append("---")
@@ -168,8 +178,10 @@ class LanguagesFormatter(BaseFormatter):
         lines = ["# Languages", ""]
 
         for language in data:
-            name = language.get("name", "")
-            proficiency = language.get("proficiency", "")
+            name = self._escape_list_item(language.get("name", ""))
+            proficiency = self._escape_inline(language.get("proficiency", "")).replace(
+                "\n", " "
+            )
             if proficiency:
                 lines.append(f"- **{name}**: {proficiency}")
             else:
@@ -191,25 +203,26 @@ class ProjectsFormatter(BaseFormatter):
         lines = ["# Projects", ""]
 
         for proj in data:
-            title = proj.get("title", "")
+            title = self._escape_heading(proj.get("title", ""))
             lines.append(f"## {title}")
 
             date_parts = []
             if proj.get("start"):
-                date_parts.append(proj["start"])
+                date_parts.append(self._escape_inline(proj["start"]).replace("\n", " "))
             if proj.get("end"):
-                date_parts.append(proj["end"])
+                date_parts.append(self._escape_inline(proj["end"]).replace("\n", " "))
             if date_parts:
                 lines.append(" - ".join(date_parts))
 
             description = self._get_text(proj.get("description"), lang)
             if description:
                 lines.append("")
-                lines.append(description)
+                lines.append(self._escape_block(description))
 
-            if proj.get("url"):
+            link = self._render_link("View Project", proj.get("url"))
+            if link:
                 lines.append("")
-                lines.append(f"[View Project]({self._sanitize_url(proj['url'])})")
+                lines.append(link)
 
             lines.append("")
             lines.append("---")

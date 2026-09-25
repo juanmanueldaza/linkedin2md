@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Added an immutable conversion contract covering supported parser keys, formatter keys, source CSV keys, output files, languages, and encoding.
+- Added a sanitized baseline export fixture and registry/output contract tests.
+- Added opt-in per-section conversion diagnostics, private JSON reports, and strict failure handling.
+
+### Security
+- Added bounded archive extraction with member, path, compression, size, row, and field limits.
+- Added UTF-8 BOM support, duplicate CSV detection, encrypted/symlink member rejection, and atomic private output writes.
+
 ## [0.7.2] - 2026-08-11
 
 ### Changed

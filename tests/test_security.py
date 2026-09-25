@@ -2,6 +2,7 @@
 
 # pyright: reportAttributeAccessIssue=false
 
+import re
 import tempfile
 from pathlib import Path
 
@@ -195,11 +196,10 @@ class TestUrlSanitization:
         assert result == ""
 
     def test_escape_parentheses(self):
-        """Ensure closing parentheses are escaped for Markdown safety."""
+        """Ensure both parentheses are escaped for Markdown safety."""
         url = "https://example.com/page(1)"
         result = self.formatter._sanitize_url(url)
-        # Only closing parenthesis is escaped to prevent breaking Markdown link syntax
-        assert result == "https://example.com/page(1%29"
+        assert result == "https://example.com/page%281%29"
 
     def test_escape_brackets(self):
         """Ensure square brackets are escaped for Markdown safety."""
@@ -217,6 +217,269 @@ class TestUrlSanitization:
         url = "  https://example.com  "
         result = self.formatter._sanitize_url(url)
         assert result == "https://example.com"
+
+
+class TestBaseFormatterRenderingPolicy:
+    """Tests for centralized text-rendering contexts."""
+
+    def setup_method(self) -> None:
+        self.formatter = ConcreteFormatter()
+
+    @pytest.mark.parametrize(
+        ("value", "expected"),
+        [
+            (None, ""),
+            ("", ""),
+            ("Café 東京", "Café 東京"),
+            ("<b>A&B</b>", "&lt;b&gt;A&amp;B&lt;/b&gt;"),
+            ("&lt;b&gt;", "&amp;lt;b&amp;gt;"),
+            ("\\", "\\\\"),
+            ("`*_[]~|", r"\`\*\_\[\]\~\|"),
+            ("a\r\nb\rc\u2028d\u2029e", "a b c d e"),
+            ("a\x00b\x1fc\x7fd", "abcd"),
+        ],
+    )
+    def test_inline_matrix(self, value: object, expected: str) -> None:
+        """Inline escaping covers coercion, HTML, delimiters, and separators."""
+        assert self.formatter._escape_inline(value) == expected
+
+    def test_get_text_is_extraction_only(self) -> None:
+        """Text extraction does not apply rendering policy."""
+        value = "<b>*raw*</b>"
+        assert self.formatter._get_text(value, "en") == value
+
+    def test_block_preserves_line_breaks(self) -> None:
+        """Block escaping normalizes physical separators without losing lines."""
+        result = self.formatter._escape_block("first\r\nsecond\rthird\u2028fourth")
+        assert result == "first\nsecond\nthird\nfourth"
+
+    @pytest.mark.parametrize(
+        "line",
+        [
+            "# heading",
+            "> quote",
+            "- item",
+            "+ item",
+            "1. item",
+            "1) item",
+            "---",
+            "===",
+            "```",
+            "~~~",
+            "| cell |",
+            "    indented",
+            "\tindented",
+        ],
+    )
+    def test_block_neutralizes_line_starts(self, line: str) -> None:
+        """Escaped block lines cannot start a Markdown block construct."""
+        result = self.formatter._escape_block(line)
+        assert result != line
+        assert "<" not in result
+        assert ">" not in result
+        assert re.match(r"^ {0,3}(?:#{1,6}|>|(?:[-+*])|\d+[.)])\s", result) is None
+        assert re.match(r"^ {0,3}(?:-{3,}|={3,})\s*$", result) is None
+        assert result.startswith(("\\", "&gt;"))
+
+    def test_context_helpers_escape_values(self) -> None:
+        """Context helpers keep their surrounding Markdown structure safe."""
+        assert self.formatter._escape_heading("Name\r\n# injected") == "Name # injected"
+        assert self.formatter._escape_list_item("- item") == "\\- item"
+        assert self.formatter._escape_joined(["A", None, "<B>", "C"]) == (
+            "A, &lt;B&gt;, C"
+        )
+        assert self.formatter._escape_link_label("A [B]\nC") == "A \\[B\\] C"
+        assert self.formatter._escape_table_cell("a|b\r\nc") == "a\\|b c"
+        assert self.formatter._blockquote("hello\n# heading") == (
+            "> hello\n> \\# heading"
+        )
+        assert self.formatter._blockquote(None) == ""
+
+    def test_table_cell_has_no_raw_pipe_or_newline(self) -> None:
+        """Table values cannot introduce an extra column or row."""
+        result = self.formatter._escape_table_cell("<b>a|b</b>\r\nnext")
+        assert "|" not in result.replace("\\|", "")
+        assert "\n" not in result
+        assert "&lt;b&gt;a\\|b&lt;/b&gt; next" == result
+
+
+class TestUrlValidationPolicy:
+    """Tests for URL parsing, validation, and destination encoding."""
+
+    def setup_method(self) -> None:
+        self.formatter = ConcreteFormatter()
+
+    @pytest.mark.parametrize(
+        ("url", "expected"),
+        [
+            ("http://example.com/path", "http://example.com/path"),
+            ("HTTP://EXAMPLE.COM/path", "HTTP://EXAMPLE.COM/path"),
+            (
+                "hTtPs://Example.com:443/path?x=1#fragment",
+                "hTtPs://Example.com:443/path?x=1#fragment",
+            ),
+            ("https://例え.テスト/path", "https://例え.テスト/path"),
+            ("https://[::1]:443/path", "https://%5B::1%5D:443/path"),
+            (
+                "MAILTO:user@example.com?subject=Hello%20World",
+                "MAILTO:user@example.com?subject=Hello%20World",
+            ),
+            ("  https://example.com  ", "https://example.com"),
+            ("\thttps://example.com\t", "https://example.com"),
+        ],
+    )
+    def test_allowed_urls_preserve_casing_and_parameters(
+        self, url: str, expected: str
+    ) -> None:
+        """Allowed schemes and ordinary URL components remain usable."""
+        assert self.formatter._validated_markdown_url(url) == expected
+        assert self.formatter._sanitize_url(url) == expected
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "httpx://example.com",
+            "http+unix://example.com",
+            "javascript:alert(1)",
+            "data:text/html,<script>",
+            "file:///etc/passwd",
+            "vbscript:msgbox(1)",
+            "example.com",
+            "http:example.com",
+            "http:///path",
+            "http://",
+            "http://example.com:abc",
+            "http://example.com:99999",
+            "http://example.com:",
+            "http://[::1",
+            "http://999.999.999.999",
+            "http://2130706433",
+            "http://0x7f000001",
+            "http://example.com:0",
+            "http://-bad.example",
+            "http://user@example.com",
+            "http://example.com\\@evil.example",
+            "mailto:",
+            "mailto://user@example.com",
+            "mailto:user",
+            "mailto:user@example.com,other@example.com",
+            "mailto:user@-bad.example",
+            "mailto:user@example.com.",
+        ],
+    )
+    def test_unsafe_or_malformed_urls_are_rejected(self, url: str) -> None:
+        """The scheme, authority, port, and address allowlists are strict."""
+        assert self.formatter._validated_markdown_url(url) == ""
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "https://example.com/a\x00b",
+            "https://example.com/a\x1fb",
+            "https://example.com/a\x7fb",
+            "https://example.com/a\u2028b",
+            "https://example.com/a b",
+            "https://example.com/a\tb",
+            "https://example.com/%00",
+            "https://example.com/%0A",
+            "https://example.com/%0D",
+            "https://example.com/%1B",
+            "https://example.com/%7F",
+            "https://example.com/%E2%80%A8",
+            "https://example.com/%E2%80%A9",
+        ],
+    )
+    def test_literal_and_encoded_controls_are_rejected(self, url: str) -> None:
+        """Control characters cannot hide in raw or percent-encoded URLs."""
+        assert self.formatter._validated_markdown_url(url) == ""
+
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "https://example.com/%",
+            "https://example.com/%0",
+            "https://example.com/%GG",
+            "https://example.com/%0G",
+            "https://example.com/%E0%A4%A",
+        ],
+    )
+    def test_malformed_percent_escapes_are_rejected(self, url: str) -> None:
+        """Every percent sign must introduce two hexadecimal digits."""
+        assert self.formatter._validated_markdown_url(url) == ""
+
+    def test_destination_delimiters_are_encoded(self) -> None:
+        """Markdown destination delimiters are encoded without changing queries."""
+        url = "https://example.com/a(b)[c]|d<e>f?x=1&y=2"
+        assert self.formatter._validated_markdown_url(url) == (
+            "https://example.com/a%28b%29%5Bc%5D%7Cd%3Ce%3Ef?x=1&y=2"
+        )
+        assert (
+            self.formatter._validated_markdown_url("https://example.com/%5Bok%5D")
+            == "https://example.com/%5Bok%5D"
+        )
+
+    def test_mailto_query_and_encoded_address_are_valid(self) -> None:
+        """Mailto accepts one encoded address and optional query data."""
+        assert (
+            self.formatter._validated_markdown_url(
+                "mailto:user%40example.com?subject=Hi#part"
+            )
+            == "mailto:user%40example.com?subject=Hi#part"
+        )
+
+
+class TestLinkRenderingHelpers:
+    """Tests for optional Markdown link construction."""
+
+    def setup_method(self) -> None:
+        self.formatter = ConcreteFormatter()
+
+    def test_link_and_table_link_escape_label_and_destination(self) -> None:
+        """Labels and destinations are independently made safe."""
+        result = self.formatter._render_link(
+            "View [now] <x>", "https://example.com/a(b)|c"
+        )
+        assert result == r"[View \[now\] &lt;x&gt;](https://example.com/a%28b%29%7Cc)"
+        assert (
+            self.formatter._render_table_link(
+                "View [now] <x>", "https://example.com/a(b)|c"
+            )
+            == result
+        )
+
+    @pytest.mark.parametrize(
+        ("label", "url"),
+        [
+            ("View", None),
+            ("View", ""),
+            ("View", "javascript:alert(1)"),
+            ("View", "https://example.com:bad"),
+            ("View", "https://example.com/%0A"),
+            ("View", "https://example.com/a b"),
+            ("", "https://example.com"),
+            (None, "https://example.com"),
+            ("   ", "https://example.com"),
+        ],
+    )
+    def test_invalid_links_are_omitted(self, label: object, url: str | None) -> None:
+        """Invalid destinations and labels never produce empty-link syntax."""
+        result = self.formatter._render_link(label, url)
+        table_result = self.formatter._render_table_link(label, url)
+        assert result == ""
+        assert table_result == ""
+        assert "[View]()" not in result
+        assert "[](" not in result
+
+    def test_compatibility_wrappers_delegate_to_central_helpers(self) -> None:
+        """Legacy entry points use the centralized policies."""
+        value = "a|b\r\nc"
+        assert self.formatter._escape_pipe(value) == self.formatter._escape_table_cell(
+            value
+        )
+        url = "HtTpS://Example.com/a|b"
+        assert self.formatter._sanitize_url(url) == (
+            self.formatter._validated_markdown_url(url)
+        )
 
 
 # =============================================================================

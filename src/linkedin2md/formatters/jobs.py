@@ -67,19 +67,19 @@ class JobPreferencesFormatter(BaseFormatter):
         lines = ["# Job Seeker Preferences", ""]
 
         if data.get("locations"):
-            lines.append(f"**Locations:** {', '.join(data['locations'])}")
+            lines.append(f"**Locations:** {self._escape_joined(data['locations'])}")
             lines.append("")
 
         if data.get("job_titles"):
-            lines.append(f"**Job Titles:** {', '.join(data['job_titles'])}")
+            lines.append(f"**Job Titles:** {self._escape_joined(data['job_titles'])}")
             lines.append("")
 
         if data.get("job_types"):
-            lines.append(f"**Job Types:** {', '.join(data['job_types'])}")
+            lines.append(f"**Job Types:** {self._escape_joined(data['job_types'])}")
             lines.append("")
 
         if data.get("industries"):
-            lines.append(f"**Industries:** {', '.join(data['industries'])}")
+            lines.append(f"**Industries:** {self._escape_joined(data['industries'])}")
             lines.append("")
 
         if data.get("open_to_recruiters"):
@@ -87,7 +87,9 @@ class JobPreferencesFormatter(BaseFormatter):
             lines.append("")
 
         if data.get("dream_companies"):
-            lines.append(f"**Dream Companies:** {', '.join(data['dream_companies'])}")
+            lines.append(
+                f"**Dream Companies:** {self._escape_joined(data['dream_companies'])}"
+            )
             lines.append("")
 
         return "\n".join(lines)
@@ -105,8 +107,10 @@ class SavedJobAnswersFormatter(BaseFormatter):
         lines = ["# Saved Job Application Answers", ""]
 
         for answer in data:
-            question = answer.get("question", "")
-            ans = answer.get("answer", "") or ""
+            question = self._escape_inline(answer.get("question", "")).replace(
+                "\n", " "
+            )
+            ans = self._escape_inline(answer.get("answer", "") or "").replace("\n", " ")
             lines.append(f"**Q:** {question}")
             lines.append(f"**A:** {ans}")
             lines.append("")
@@ -128,7 +132,11 @@ class ScreeningResponsesFormatter(BaseFormatter):
         for i, response in enumerate(data, 1):
             lines.append(f"## Response {i}")
             for key, value in response.items():
-                lines.append(f"- **{key}:** {value}")
+                formatted_key = self._escape_inline(
+                    str(key).replace("_", " ").title()
+                ).replace("\n", " ")
+                formatted_value = self._escape_list_item(value)
+                lines.append(f"- **{formatted_key}:** {formatted_value}")
             lines.append("")
 
         return "\n".join(lines)
@@ -146,8 +154,12 @@ class SavedJobAlertsFormatter(BaseFormatter):
         lines = ["# Saved Job Alerts", ""]
 
         for alert in data:
-            search_id = alert.get("search_id", "")
-            query = alert.get("query_context", "") or ""
+            search_id = self._escape_inline(alert.get("search_id", "")).replace(
+                "\n", " "
+            )
+            query = self._escape_inline(alert.get("query_context", "") or "").replace(
+                "\n", " "
+            )
             lines.append(f"**Alert ID:** {search_id}")
             if query:
                 lines.append(f"**Query:** {query}")
@@ -174,20 +186,23 @@ class JobDescriptionFormatter(BaseFormatter):
             date_applied = job.get("date_applied", "") or ""
             status = job.get("status", "") or ""
 
-            heading = company or title or "Unknown"
+            heading = self._escape_heading(company or title or "Unknown")
             lines.append(f"## {heading}")
             if company and title:
-                lines.append(f"**Title:** {title}")
+                title_value = self._escape_inline(title).replace("\n", " ")
+                lines.append(f"**Title:** {title_value}")
             elif not company and title:
                 lines.append("**Company:** (not specified)")
             if company and not title:
                 lines.append("**Title:** (not specified)")
             if description:
-                lines.append(f"**Description:** {description}")
+                lines.append(f"**Description:** {self._escape_block(description)}")
             if date_applied:
-                lines.append(f"**Date Applied:** {date_applied}")
+                date_value = self._escape_inline(date_applied).replace("\n", " ")
+                lines.append(f"**Date Applied:** {date_value}")
             if status:
-                lines.append(f"**Status:** {status}")
+                status_value = self._escape_inline(status).replace("\n", " ")
+                lines.append(f"**Status:** {status_value}")
             lines.append("")
             lines.append("---")
             lines.append("")
