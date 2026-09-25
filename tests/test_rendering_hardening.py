@@ -1,7 +1,5 @@
 import ast
-import csv
 import inspect
-import io
 import re
 import zipfile
 from importlib import import_module
@@ -791,12 +789,17 @@ def _table_attack_rows(section_key: str) -> list[dict[str, object]]:
     return [attack, empty, blank]
 
 
+def _csv_field(value: object) -> str:
+    text = "" if value is None else str(value)
+    return f'"{text.replace(chr(34), chr(34) * 2)}"'
+
+
 def _csv_text(fields: list[str], rows: list[dict[str, object]]) -> str:
-    stream = io.StringIO(newline="")
-    writer = csv.DictWriter(stream, fieldnames=fields, lineterminator="\n")
-    writer.writeheader()
-    writer.writerows(rows)
-    return stream.getvalue()
+    lines = [",".join(_csv_field(field) for field in fields)]
+    lines.extend(
+        ",".join(_csv_field(row.get(field)) for field in fields) for row in rows
+    )
+    return "\r\n".join(lines) + "\r\n"
 
 
 def _write_export(
