@@ -191,7 +191,7 @@ class ZipDataExtractor(DataExtractor):
 
     def _parse_csv(self, content: str, name: str) -> list[dict]:
         try:
-            content = self._skip_header_notes(content)
+            content = self._skip_header_notes(content).replace("\x00", "")
             reader = csv.DictReader(io.StringIO(content))
             if reader.fieldnames:
                 for field in reader.fieldnames:

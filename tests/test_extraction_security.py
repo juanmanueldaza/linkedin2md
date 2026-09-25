@@ -41,6 +41,17 @@ def test_utf8_bom_and_nested_csv_are_supported(tmp_path: Path) -> None:
     assert data["profile"][0]["First Name"] == "Ada"
 
 
+def test_nul_is_removed_before_csv_parsing(tmp_path: Path) -> None:
+    zip_path = _zip_with(
+        tmp_path / "nul.zip",
+        {"Profile.csv": "First Name,Summary\nAda,safe\x00value\n"},
+    )
+
+    data = ZipDataExtractor(zip_path).extract()
+
+    assert data["profile"][0]["Summary"] == "safevalue"
+
+
 def test_max_rows_positional_argument_remains_supported(tmp_path: Path) -> None:
     zip_path = _zip_with(
         tmp_path / "rows.zip",
