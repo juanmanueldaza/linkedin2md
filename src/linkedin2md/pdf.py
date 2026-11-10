@@ -6,17 +6,38 @@ SOLID principles compliance:
 """
 
 import logging
+import re
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
+# A real ATX heading: 1-6 "#" followed by whitespace or end of line.
+_ATX_HEADING_PATTERN = re.compile(r"^(#{1,6})(?=\s|$)")
+
 
 def _demote_headings(markdown_text: str) -> str:
-    """Shift every Markdown heading down one level (H1 -> H2, etc.)."""
-    return "\n".join(
-        f"#{line}" if line.startswith("#") else line
-        for line in markdown_text.split("\n")
-    )
+    """Shift every Markdown heading down one level (H1 -> H2, etc.).
+
+    Only real ATX headings are demoted. Lines inside fenced code blocks,
+    "#hashtag"-style text, and headings already at H6 (H7 is not valid
+    Markdown) are left untouched so section content is never corrupted.
+    """
+    demoted: list[str] = []
+    in_fence = False
+    for line in markdown_text.split("\n"):
+        if line.lstrip().startswith("```"):
+            in_fence = not in_fence
+            demoted.append(line)
+            continue
+        if in_fence:
+            demoted.append(line)
+            continue
+        match = _ATX_HEADING_PATTERN.match(line)
+        if match and len(match.group(1)) < 6:
+            demoted.append(f"#{line}")
+        else:
+            demoted.append(line)
+    return "\n".join(demoted)
 
 
 def assemble_resume_markdown(sections: list[tuple[str, str]]) -> str:
